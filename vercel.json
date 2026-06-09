@@ -1,6 +1,6 @@
 {
   "buildCommand": "cd frontend && npm run build",
   "installCommand": "cd frontend && npm install",
-  "framework": null,
-  "outputDirectory": "frontend/.output/public"
+  "devCommand": "cd frontend && npm run dev",
+  "outputDirectory": "frontend/.vercel/output"
 }
