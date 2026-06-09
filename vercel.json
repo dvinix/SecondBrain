@@ -1,21 +1,6 @@
 {
   "buildCommand": "cd frontend && npm run build",
-  "outputDirectory": "frontend/.output/public",
-  "devCommand": "cd frontend && npm run dev",
   "installCommand": "cd frontend && npm install",
   "framework": null,
-  "regions": ["iad1"],
-  "functions": {
-    "frontend/.output/server/**": {
-      "runtime": "nodejs20.x",
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/frontend/.output/server/index.mjs"
-    }
-  ]
+  "outputDirectory": "frontend/.output/public"
 }
