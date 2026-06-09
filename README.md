@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- PROJECT LOGO -->
-<img src=".github/assets/logo.svg" alt="SecondBrain Logo" width="120" height="120">
+<img src=".frontend\public\favicon.svg" alt="SecondBrain Logo" width="120" height="120">
 
 # SecondBrain
 
