@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- PROJECT LOGO -->
-<img src=".frontend\public\favicon.svg" alt="SecondBrain Logo" width="120" height="120">
+<img src="frontend\public\favicon.svg" alt="SecondBrain Logo" width="120" height="120">
 
 # SecondBrain
 
@@ -17,7 +17,6 @@
 [![GitHub Stars](https://img.shields.io/github/stars/dvinix/SecondBrain?style=for-the-badge&logo=github)](https://github.com/dvinix/SecondBrain/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/dvinix/SecondBrain?style=for-the-badge&logo=github)](https://github.com/dvinix/SecondBrain/network/members)
 
-<img src=".github/assets/hero-banner.png" alt="SecondBrain Hero" width="800">
 
 </div>
 
@@ -102,7 +101,7 @@ Upload, organize, and explore. Chat with your knowledge base. Highlight key pass
 </tr>
 </table>
 
----
+<!-- ---
 
 ## 📸 Screenshots
 
@@ -122,7 +121,7 @@ Upload, organize, and explore. Chat with your knowledge base. Highlight key pass
 
 </div>
 
----
+--- -->
 
 ## 🏗️ System Architecture
 
