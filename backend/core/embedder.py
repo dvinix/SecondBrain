@@ -18,7 +18,7 @@ class Embedder:
     to SupabaseVectorStore or any other LangChain VectorStore.
     """
 
-    MODEL = "models/text-embedding-004"
+    MODEL = "gemini-embedding-001"
     BATCH_SIZE = 100        # Gemini max per call
     RPM_LIMIT = 1400        # stay under 1500 RPM limit
     DIMENSIONS = 768
@@ -29,6 +29,7 @@ class Embedder:
         self.lc_embeddings = GoogleGenerativeAIEmbeddings(
             model=self.MODEL,
             google_api_key=GEMINI_API_KEY,
+            output_dimensionality=self.DIMENSIONS,  # Matryoshka truncation to 768
         )
 
     def embed_texts(self, texts: List[str]) -> List[List[float]]:
@@ -87,6 +88,7 @@ class Embedder:
         b = np.array(vec_b)
         denom = np.linalg.norm(a) * np.linalg.norm(b)
         return float(np.dot(a, b) / denom) if denom > 0 else 0.0
+
 
     def _wait_for_rate_limit(self):
         """Token bucket rate limiter. Ensures we stay under RPM_LIMIT."""
