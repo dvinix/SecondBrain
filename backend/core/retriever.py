@@ -1,7 +1,7 @@
 # core/retriever.py
 
 from typing import List, Dict
-from rank_bm25 import BM25Okapi
+from rank_bm25 import BM25
 import re
 
 from langchain_core.retrievers import BaseRetriever
@@ -82,8 +82,8 @@ def keyword_search(query: str, top_k: int = 20) -> List[Dict]:
     response = (
         supabase.table("chunks")
         .select("id, doc_id, text, parent_text, page_number, chunk_index, documents(name)")
-        .text_search("text", search_pattern)
         .limit(top_k)
+        .text_search("text", search_pattern)
         .execute()
     )
 
