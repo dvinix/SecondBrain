@@ -8,11 +8,12 @@ import {
 } from "react";
 import { useApp } from "@/context/AppContext";
 import { MessageBubble } from "./MessageBubble";
+import type { Message, SourceChunk } from "@/context/AppContext";
+import { Send, GitBranch, Pencil, Check } from "lucide-react";
+import { queryStream, isBackendAvailable } from "@/lib/api";
 import { streamAnswer, parseCitations } from "@/lib/gemini";
 import { searchChunks } from "@/lib/supabase";
 import { generateEmbedding } from "@/lib/gemini";
-import type { Message, SourceChunk } from "@/context/AppContext";
-import { Send, GitBranch, Pencil, Check } from "lucide-react";
 
 // ── Suggested questions ────────────────────────────────────────────────────────
 
@@ -32,15 +33,15 @@ function EmptyState({
   return (
     <div className="flex-1 flex flex-col items-center justify-center gap-6 px-6">
       <div className="text-center">
-        <div className="h-12 w-12 rounded-xl bg-[#7F77DD]/10 border border-[#7F77DD]/20 
-                        grid place-items-center mx-auto mb-4">
+        <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/20
+                        grid place-items-center mx-auto mb-5 shadow-[0_0_24px_rgba(132,165,157,0.12)]">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
+            width="22"
+            height="22"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#7F77DD"
+            stroke="var(--primary)"
             strokeWidth="1.75"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -55,8 +56,11 @@ function EmptyState({
             <path d="M6.003 5.125a4 4 0 0 0-2.526 5.77" />
           </svg>
         </div>
-        <p className="text-[13px] text-white/30 font-medium">
+        <p className="text-[13px] text-white/40 font-medium">
           Ask anything across your knowledge base
+        </p>
+        <p className="text-[11px] text-white/20 mt-1">
+          Powered by semantic retrieval + AI synthesis
         </p>
       </div>
 
@@ -65,9 +69,9 @@ function EmptyState({
           <button
             key={q}
             onClick={() => onSuggest(q)}
-            className="rounded-lg border border-[#1E1E2E] bg-white/[0.02] px-4 py-2.5 text-left
+            className="rounded-xl border border-border bg-surface/50 px-4 py-3 text-left
                        text-[12px] text-white/50 transition-all
-                       hover:border-[#7F77DD]/20 hover:bg-[#7F77DD]/5 hover:text-white/70"
+                       hover:border-primary/30 hover:bg-primary/5 hover:text-white/80"
           >
             {q}
           </button>
@@ -107,10 +111,10 @@ function SessionName() {
             if (e.key === "Enter") commit();
             if (e.key === "Escape") { setValue(state.sessionName); setEditing(false); }
           }}
-          className="bg-transparent text-[13px] font-medium text-white/80 border-b border-[#7F77DD]/40
-                     focus:outline-none focus:border-[#7F77DD] w-40 leading-none pb-0.5"
+          className="bg-transparent text-[13px] font-medium text-white/80 border-b border-primary/40
+                     focus:outline-none focus:border-primary w-40 leading-none pb-0.5"
         />
-        <button onClick={commit} className="text-[#1D9E75]">
+        <button onClick={commit} className="text-primary">
           <Check size={12} />
         </button>
       </div>
@@ -155,7 +159,7 @@ export function ChatPanel() {
     el.style.height = Math.min(el.scrollHeight, lineHeight * maxLines + 16) + "px";
   };
 
-  // ⌘/ toggle graph, ⌘↵ send
+  // ⌘/ toggle graph
   const handleGlobalKey = useCallback(
     (e: globalThis.KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "/") {
@@ -187,7 +191,6 @@ export function ChatPanel() {
     setInput("");
     if (textareaRef.current) textareaRef.current.style.height = "auto";
 
-    // Add user message
     const userMsg: Message = {
       id: `user-${Date.now()}`,
       role: "user",
@@ -196,7 +199,6 @@ export function ChatPanel() {
     };
     addMessage(userMsg);
 
-    // Add placeholder AI message (streaming)
     const aiId = `ai-${Date.now()}`;
     const aiMsg: Message = {
       id: aiId,
@@ -209,7 +211,35 @@ export function ChatPanel() {
     setQuerying(true);
 
     try {
-      // 1. Generate query embedding
+      // ── Path A: Python backend (if VITE_API_URL is set) ─────────────────────
+      if (isBackendAvailable()) {
+        let fullText = "";
+        let chunks: SourceChunk[] = [];
+
+        for await (const event of queryStream(query)) {
+          if (event.type === "token") {
+            fullText += event.text ?? "";
+            updateMessage(aiId, { content: fullText });
+          } else if (event.type === "sources") {
+            chunks = (event.chunks ?? []) as SourceChunk[];
+          } else if (event.type === "error") {
+            throw new Error(event.message ?? "Backend error");
+          }
+        }
+
+        const citations = parseCitations(fullText, chunks);
+        updateMessage(aiId, {
+          content: fullText,
+          citations,
+          sources: chunks,
+          chunkCount: chunks.length,
+          docCount: new Set(chunks.map((c) => c.docId)).size,
+          isStreaming: false,
+        });
+        return;
+      }
+
+      // ── Path B: Direct Gemini + Supabase (fallback) ──────────────────────────
       let chunks: SourceChunk[] = [];
       let usingDemoChunks = false;
 
@@ -217,7 +247,6 @@ export function ChatPanel() {
         const embedding = await generateEmbedding(query);
         chunks = await searchChunks(embedding, { topK: 8 });
       } catch {
-        // Fallback to demo chunks if Supabase isn't configured
         usingDemoChunks = true;
         chunks = state.documents
           .filter((d) => d.status === "indexed")
@@ -231,7 +260,6 @@ export function ChatPanel() {
           }));
       }
 
-      // 2. Stream answer
       let fullText = "";
 
       if (!usingDemoChunks) {
@@ -241,12 +269,11 @@ export function ChatPanel() {
           updateMessage(aiId, { content: fullText });
         }
       } else {
-        // Demo mode: simulate streaming
         const demoAnswer = `Based on your knowledge base, here are the key insights about "${query}": 
 
-The documents in your library cover related topics extensively [${chunks[0]?.filename?.replace(/\.[^.]+$/, "") ?? "doc"} p.1]. Multiple sources corroborate the main findings and provide complementary perspectives [${chunks[1]?.filename?.replace(/\.[^.]+$/, "") ?? "doc2"} p.5].
+The documents in your library cover related topics extensively [${chunks[0]?.filename?.replace(/\.[^.]+$/, "") ?? "doc"} p.1]. Multiple sources corroborate the main findings [${chunks[1]?.filename?.replace(/\.[^.]+$/, "") ?? "doc2"} p.5].
 
-To get real answers, configure your VITE_GEMINI_KEY and VITE_SUPABASE_URL environment variables.`;
+To get real answers powered by the backend, start the Python server and set VITE_API_URL=http://localhost:8000 in your .env file.`;
 
         for (const char of demoAnswer) {
           fullText += char;
@@ -255,16 +282,13 @@ To get real answers, configure your VITE_GEMINI_KEY and VITE_SUPABASE_URL enviro
         }
       }
 
-      // 3. Parse citations & finalize
       const citations = parseCitations(fullText, chunks);
-      const uniqueDocs = new Set(chunks.map((c) => c.docId)).size;
-
       updateMessage(aiId, {
         content: fullText,
         citations,
         sources: chunks,
         chunkCount: chunks.length,
-        docCount: uniqueDocs,
+        docCount: new Set(chunks.map((c) => c.docId)).size,
         isStreaming: false,
       });
     } catch (err) {
@@ -283,9 +307,9 @@ To get real answers, configure your VITE_GEMINI_KEY and VITE_SUPABASE_URL enviro
   };
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-[#0A0A0F]">
+    <div className="flex-1 flex flex-col min-w-0 bg-background">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-[#1E1E2E] shrink-0">
+      <div className="flex items-center justify-between px-5 py-3 border-b border-border shrink-0 bg-surface/40">
         <SessionName />
         <button
           id="graph-toggle-btn"
@@ -294,8 +318,8 @@ To get real answers, configure your VITE_GEMINI_KEY and VITE_SUPABASE_URL enviro
           className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-[12px] font-medium 
                       border transition-all
                       ${state.isGraphOpen
-              ? "border-[#7F77DD]/30 bg-[#7F77DD]/10 text-[#7F77DD]"
-              : "border-[#1E1E2E] text-white/40 hover:text-white/70 hover:border-[#1E1E2E]"
+              ? "border-primary/30 bg-primary/10 text-primary"
+              : "border-border text-white/40 hover:text-white/70 hover:border-border"
             }`}
         >
           <GitBranch size={13} />
@@ -319,14 +343,14 @@ To get real answers, configure your VITE_GEMINI_KEY and VITE_SUPABASE_URL enviro
       </div>
 
       {/* Input area */}
-      <div className="shrink-0 px-5 py-4 border-t border-[#1E1E2E]">
+      <div className="shrink-0 px-5 py-4 border-t border-border bg-surface/40">
         <div className="max-w-3xl mx-auto">
           <div
-            className={`relative flex items-end gap-3 rounded-xl border bg-[#111118] px-4 py-3 
+            className={`relative flex items-end gap-3 rounded-2xl border bg-surface px-4 py-3 
                          transition-all duration-200
                          ${state.isQuerying || input.length > 0
-                ? "border-[#7F77DD]/40 shadow-[0_0_0_1px_rgba(127,119,221,0.15),0_0_20px_rgba(127,119,221,0.08)]"
-                : "border-[#1E1E2E] focus-within:border-[#7F77DD]/40 focus-within:shadow-[0_0_0_1px_rgba(127,119,221,0.15),0_0_20px_rgba(127,119,221,0.08)]"
+                ? "border-[var(--sb-purple)]/40 shadow-[0_0_0_1px_rgba(127,119,221,0.15),0_0_24px_rgba(127,119,221,0.09)]"
+                : "border-border focus-within:border-[var(--sb-purple)]/40 focus-within:shadow-[0_0_0_1px_rgba(127,119,221,0.15),0_0_24px_rgba(127,119,221,0.09)]"
               }`}
           >
             <textarea
@@ -346,16 +370,18 @@ To get real answers, configure your VITE_GEMINI_KEY and VITE_SUPABASE_URL enviro
               id="send-btn"
               onClick={sendMessage}
               disabled={!input.trim() || state.isQuerying}
-              className="shrink-0 h-8 w-8 rounded-lg bg-[#7F77DD] grid place-items-center 
-                         transition-all hover:bg-[#6B63CC] disabled:opacity-30 disabled:cursor-not-allowed
-                         disabled:hover:bg-[#7F77DD]"
+              className="shrink-0 h-8 w-8 rounded-lg bg-[var(--sb-purple)] grid place-items-center 
+                         transition-all hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <Send size={14} className="text-white" />
             </button>
           </div>
 
           <p className="mt-2 text-[11px] text-white/20 text-center">
-            Searching {state.totalChunks.toLocaleString()} chunks · Gemini Flash
+            {isBackendAvailable()
+              ? `Backend connected · ${state.totalChunks.toLocaleString()} chunks indexed`
+              : `Searching ${state.totalChunks.toLocaleString()} chunks · Demo mode`
+            }
           </p>
         </div>
       </div>

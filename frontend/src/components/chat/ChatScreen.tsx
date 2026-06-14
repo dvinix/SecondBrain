@@ -9,7 +9,7 @@ function ChatLayout() {
   const { state } = useApp();
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#0A0A0F] text-white">
+    <div data-chat-screen className="flex h-screen w-screen overflow-hidden bg-background text-white">
       {/* Left Sidebar */}
       <Sidebar />
 
@@ -25,7 +25,7 @@ function ChatLayout() {
             animate={{ width: 320, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            className="shrink-0 border-l border-[#1E1E2E] overflow-hidden"
+            className="shrink-0 border-l border-border overflow-hidden"
             style={{ minWidth: 0 }}
           >
             <GraphPanel />

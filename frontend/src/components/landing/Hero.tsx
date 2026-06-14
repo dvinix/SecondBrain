@@ -110,14 +110,16 @@ export function Hero() {
             className="mt-9 flex flex-wrap items-center justify-center gap-3"
           >
             <a
-              href="#demo"
+              href="/chat"
               className="group relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-primary to-secondary px-5 py-3 text-sm font-medium text-primary-foreground glow-primary hover:scale-[1.02] transition-transform"
             >
-              View Demo
+              Try Demo
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </a>
             <a
-              href="https://github.com"
+              href="https://github.com/dvinix/SecondBrain/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-xl glass px-5 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors"
             >
               <Play className="h-4 w-4 text-primary" />

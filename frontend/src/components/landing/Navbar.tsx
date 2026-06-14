@@ -6,7 +6,7 @@ const links = [
   { label: "Features", href: "#features" },
   { label: "How It Works", href: "#how" },
   { label: "Tech Stack", href: "#stack" },
-  { label: "GitHub", href: "https://github.com" },
+  { label: "GitHub", href: "https://github.com/dvinix/SecondBrain/" },
 ];
 
 export function Navbar() {
@@ -56,10 +56,10 @@ export function Navbar() {
 
           <div className="flex items-center gap-2">
             <a
-              href="#demo"
+              href="/chat"
               className="relative inline-flex items-center gap-1.5 rounded-lg bg-white text-background px-4 py-2 text-sm font-medium hover:bg-white/90 transition-all hover:scale-[1.02]"
             >
-              Demo
+              Try Demo
             </a>
           </div>
         </nav>

@@ -17,7 +17,6 @@ function renderContentWithCitations(
   const parts: Array<string | Citation> = [];
   let remaining = content;
 
-  // Build a map of citation patterns
   for (const cit of citations) {
     const nameNoExt = cit.filename.replace(/\.[^.]+$/, "");
     const pattern = cit.page
@@ -50,7 +49,7 @@ function renderContentWithCitations(
 
 function TypingCursor() {
   return (
-    <span className="inline-block ml-0.5 w-[2px] h-[14px] bg-[#7F77DD] align-middle animate-[cursor-blink_1s_step-end_infinite] rounded-sm" />
+    <span className="inline-block ml-0.5 w-[2px] h-[14px] bg-primary align-middle animate-[cursor-blink_1s_step-end_infinite] rounded-sm" />
   );
 }
 
@@ -59,9 +58,14 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
   if (isUser) {
     return (
-      <div className="flex justify-end mb-4">
-        <div className="max-w-[65%] rounded-2xl rounded-tr-sm bg-[#7F77DD] px-4 py-2.5">
-          <p className="text-sm text-white leading-relaxed">{message.content}</p>
+      <div className="flex justify-end mb-5">
+        <div
+          className="max-w-[65%] rounded-2xl rounded-tr-sm px-4 py-3 shadow-[0_2px_12px_rgba(132,165,157,0.15)]"
+          style={{
+            background: "linear-gradient(135deg, var(--primary) 0%, #6b9c94 100%)",
+          }}
+        >
+          <p className="text-[13px] text-white leading-relaxed font-medium">{message.content}</p>
         </div>
       </div>
     );
@@ -69,16 +73,23 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
   // AI message
   return (
-    <div className="flex gap-3 mb-6 group">
+    <div className="flex gap-3 mb-7 group">
       {/* SB avatar */}
-      <div className="shrink-0 mt-0.5 h-7 w-7 rounded-full border border-[#7F77DD]/40 bg-[#7F77DD]/10 
-                      grid place-items-center text-[10px] font-semibold text-[#7F77DD] select-none">
+      <div
+        className="shrink-0 mt-0.5 h-7 w-7 rounded-full border grid place-items-center
+                    text-[10px] font-semibold select-none"
+        style={{
+          borderColor: "rgba(132,165,157,0.35)",
+          backgroundColor: "rgba(132,165,157,0.10)",
+          color: "var(--primary)",
+        }}
+      >
         SB
       </div>
 
       <div className="flex-1 min-w-0">
         {/* Answer text */}
-        <div className="text-sm text-white/90 leading-[1.7]">
+        <div className="text-[13px] text-white/90 leading-[1.75]">
           {renderContentWithCitations(message.content, message.citations)}
           {message.isStreaming && <TypingCursor />}
         </div>

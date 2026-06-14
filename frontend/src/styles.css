@@ -208,16 +208,21 @@
 /* ── SecondBrain Chat Design Tokens ─────────────────────────────────────────── */
 
 :root {
-  /* SecondBrain accent palette */
+  /* Interactive accent — kept only for focus rings, send button */
   --sb-purple: #7F77DD;
-  --sb-purple-tint: #EEEDFE;
+  --sb-purple-dim: rgba(127, 119, 221, 0.12);
   --sb-teal: #1D9E75;
   --sb-coral: #E86A58;
 
-  /* Chat surfaces */
-  --chat-bg: #0A0A0F;
-  --chat-surface: #111118;
-  --chat-border: #1E1E2E;
+  /* Chat surfaces — aliased to landing palette for full consistency */
+  --chat-bg: var(--background);       /* #0b0b0f */
+  --chat-surface: var(--surface);     /* #15171c */
+  --chat-border: var(--border);       /* #25272d */
+
+  /* Chat primary = landing primary (sage green) */
+  --chat-primary: var(--primary);     /* #84a59d */
+  --chat-primary-dim: rgba(132, 165, 157, 0.12);
+  --chat-primary-ring: rgba(132, 165, 157, 0.35);
 }
 
 /* ── Typing cursor blink ─────────────────────────────────────────────────────── */

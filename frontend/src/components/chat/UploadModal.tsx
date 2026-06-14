@@ -6,6 +6,7 @@ import { extractFile } from "@/lib/pdfExtract";
 import { chunkText } from "@/lib/chunker";
 import { generateEmbedding, enhanceOcrText } from "@/lib/gemini";
 import { insertDocument, insertChunks } from "@/lib/supabase";
+import { ingestFile as backendIngest, isBackendAvailable } from "@/lib/api";
 import { X, Upload, FileText, FileCode, AlignLeft, File, Loader2, Info } from "lucide-react";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -43,8 +44,8 @@ const STATUS_COLOR: Record<IndexStatus, string> = {
   queued: "text-white/40 bg-white/5",
   extracting: "text-amber-400 bg-amber-400/10",
   ocr: "text-amber-400 bg-amber-400/10",
-  embedding: "text-[#7F77DD] bg-[#7F77DD]/10",
-  indexed: "text-[#1D9E75] bg-[#1D9E75]/10",
+  embedding: "text-primary bg-primary/10",
+  indexed: "text-[var(--sb-teal)] bg-[var(--sb-teal)]/10",
   error: "text-red-400 bg-red-400/10",
 };
 
@@ -82,7 +83,7 @@ function QueueRow({
   const Icon = TYPE_ICON[ext] ?? File;
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-[#1E1E2E] bg-white/[0.02] px-4 py-3">
+    <div className="flex flex-col gap-2 rounded-lg border border-border bg-white/[0.02] px-4 py-3">
       <div className="flex items-center gap-3">
         <Icon size={14} className="shrink-0 text-white/40" />
         <div className="flex-1 min-w-0">
@@ -98,7 +99,7 @@ function QueueRow({
           {item.status !== "queued" && item.status !== "error" && (
             <div className="mt-1.5 h-0.5 bg-white/5 rounded-full overflow-hidden">
               <div
-                className="h-full bg-[#7F77DD] rounded-full transition-all duration-300"
+                className="h-full bg-primary rounded-full transition-all duration-300"
                 style={{ width: `${item.progress}%` }}
               />
             </div>
@@ -165,13 +166,44 @@ export function UploadModal() {
   const processFile = useCallback(
     async (queueId: string, file: File) => {
       const startTime = Date.now();
-      const docId = `doc-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const type = detectType(file);
 
       const updateItem = (patch: Partial<QueuedFile>) =>
         setQueue((prev) =>
           prev.map((q) => (q.id === queueId ? { ...q, ...patch } : q))
         );
+
+      // ── Path A: Python backend ────────────────────────────────────────────────
+      if (isBackendAvailable()) {
+        try {
+          updateItem({ status: "extracting", progress: 20 });
+          const result = await backendIngest(file);
+          const indexTime = Date.now() - startTime;
+
+          const docId = result.doc_id;
+          addDocument({
+            id: docId,
+            filename: file.name,
+            type,
+            chunkCount: result.chunks,
+            status: "indexed",
+            size: file.size,
+            indexedAt: new Date(),
+            avgIndexTime: indexTime,
+          });
+
+          updateItem({ status: "indexed", progress: 100, chunks: result.chunks, indexTime });
+        } catch (err) {
+          updateItem({
+            status: "error",
+            error: err instanceof Error ? err.message : "Backend ingest failed",
+          });
+        }
+        return;
+      }
+
+      // ── Path B: Local pipeline fallback ──────────────────────────────────────
+      const docId = `doc-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
       try {
         // Step 1: Extract text
@@ -221,7 +253,6 @@ export function UploadModal() {
               chunk_index: i,
             });
           } catch {
-            // If Gemini isn't configured, store chunks without embeddings
             embeddedChunks.push({
               doc_id: docId,
               content: chunks[i],
@@ -340,12 +371,12 @@ export function UploadModal() {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.96, opacity: 0, y: 8 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-[520px] rounded-2xl border border-[#1E1E2E] 
-                       bg-[#111118] shadow-2xl overflow-hidden mx-4"
+            className="relative w-full max-w-[520px] rounded-2xl border border-border 
+                       bg-surface shadow-2xl overflow-hidden mx-4"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#1E1E2E]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <div>
                 <h2 className="text-[14px] font-semibold text-white">Add Documents</h2>
                 <p className="text-[11px] text-white/30 mt-0.5">
@@ -355,8 +386,8 @@ export function UploadModal() {
               <button
                 id="close-upload-modal"
                 onClick={() => setUploadOpen(false)}
-                className="h-7 w-7 rounded-md border border-[#1E1E2E] grid place-items-center 
-                           text-white/40 hover:text-white/70 hover:border-[#2E2E3E] transition-all"
+                className="h-7 w-7 rounded-md border border-border grid place-items-center 
+                           text-white/40 hover:text-white/70 hover:border-border/80 transition-all"
               >
                 <X size={13} />
               </button>
@@ -373,18 +404,18 @@ export function UploadModal() {
                             rounded-xl border-2 border-dashed py-10 px-6 cursor-pointer
                             transition-all duration-200
                             ${isDragOver
-                    ? "border-[#7F77DD]/50 bg-[#7F77DD]/5"
-                    : "border-[#1E1E2E] hover:border-[#7F77DD]/30 hover:bg-white/[0.02]"
+                    ? "border-primary/50 bg-primary/5"
+                    : "border-border hover:border-primary/30 hover:bg-white/[0.02]"
                   }`}
               >
                 <div className={`h-10 w-10 rounded-xl border grid place-items-center transition-all
-                                  ${isDragOver ? "border-[#7F77DD]/40 bg-[#7F77DD]/10" : "border-[#1E1E2E] bg-white/[0.03]"}`}>
-                  <Upload size={16} className={isDragOver ? "text-[#7F77DD]" : "text-white/30"} />
+                                  ${isDragOver ? "border-primary/40 bg-primary/10" : "border-border bg-white/[0.03]"}`}>
+                  <Upload size={16} className={isDragOver ? "text-primary" : "text-white/30"} />
                 </div>
                 <div className="text-center">
                   <p className="text-[13px] text-white/60 font-medium">
                     Drop files here, or{" "}
-                    <span className="text-[#7F77DD]">browse</span>
+                    <span className="text-primary">browse</span>
                   </p>
                   <p className="text-[11px] text-white/25 mt-1">
                     PDF · MD · TXT · DOCX
@@ -418,7 +449,7 @@ export function UploadModal() {
 
             {/* Stats row */}
             {indexed.length > 0 && (
-              <div className="flex items-center gap-6 px-6 py-4 border-t border-[#1E1E2E] mt-2">
+              <div className="flex items-center gap-6 px-6 py-4 border-t border-border mt-2">
                 <div>
                   <p className="text-[10px] text-white/30 uppercase tracking-wider">Indexed</p>
                   <p className="text-[13px] font-medium text-white">{indexed.length}</p>

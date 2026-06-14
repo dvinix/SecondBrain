@@ -32,10 +32,10 @@ interface GraphData {
 // ── Color map ──────────────────────────────────────────────────────────────────
 
 const TYPE_COLORS: Record<string, string> = {
-  pdf: "#7F77DD",
-  md: "#1D9E75",
-  txt: "#E86A58",
-  docx: "#7F77DD",
+  pdf: "var(--primary)",
+  md: "var(--sb-teal)",
+  txt: "var(--sb-coral)",
+  docx: "var(--primary)",
 };
 
 // ── Build graph data from documents ───────────────────────────────────────────
@@ -82,7 +82,7 @@ const LEGEND = [
 function GraphLegend() {
   return (
     <div className="absolute bottom-3 left-3 flex items-center gap-3 
-                    bg-[#111118]/80 backdrop-blur-sm border border-[#1E1E2E] 
+                    bg-surface/80 backdrop-blur-sm border border-border 
                     rounded-lg px-3 py-2">
       {LEGEND.map(({ label, color }) => (
         <div key={label} className="flex items-center gap-1.5">
@@ -102,7 +102,7 @@ function GraphLegend() {
 function GraphEmptyState() {
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center px-6">
-      <div className="h-12 w-12 rounded-xl bg-white/[0.03] border border-[#1E1E2E] 
+      <div className="h-12 w-12 rounded-xl bg-white/[0.03] border border-border 
                       grid place-items-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -190,18 +190,18 @@ export function GraphPanel() {
   return (
     <div
       ref={containerRef}
-      className="relative h-full w-full bg-[#0A0A0F] overflow-hidden"
+      className="relative h-full w-full bg-background overflow-hidden"
     >
       {/* Header */}
       <div className="absolute top-0 inset-x-0 z-10 flex items-center justify-between 
-                      px-4 py-3 border-b border-[#1E1E2E] bg-[#0A0A0F]/90 backdrop-blur-sm">
+                      px-4 py-3 border-b border-border bg-background/90 backdrop-blur-sm">
         <div className="flex items-center gap-2">
           <span className="text-[11px] font-medium text-white/40 uppercase tracking-wider">
             Knowledge Graph
           </span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#1D9E75] animate-pulse" />
+          <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ backgroundColor: "var(--sb-teal)" }} />
           <span className="text-[10px] text-white/30">Live</span>
         </div>
       </div>
@@ -211,10 +211,10 @@ export function GraphPanel() {
           graphData={graphData}
           width={dimensions.width}
           height={dimensions.height}
-          backgroundColor="#0A0A0F"
+          backgroundColor="var(--background)"
           nodeCanvasObject={nodeCanvasObject as any}
           nodeCanvasObjectMode={() => "replace"}
-          linkColor={() => "rgba(127,119,221,0.3)"}
+          linkColor={() => "rgba(132,165,157,0.25)"}
           linkWidth={(link) => (link as GraphLink).value * 2}
           onNodeClick={(node) => {
             const n = node as unknown as GraphNode;

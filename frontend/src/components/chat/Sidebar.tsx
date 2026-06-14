@@ -4,10 +4,10 @@ import type { Document } from "@/context/AppContext";
 import { Search, Plus, FileText, FileCode, File, AlignLeft } from "lucide-react";
 
 const TYPE_COLOR: Record<string, string> = {
-  pdf: "#7F77DD",
-  md: "#1D9E75",
-  txt: "#E86A58",
-  docx: "#7F77DD",
+  pdf: "var(--primary)",
+  md: "var(--sb-teal)",
+  txt: "var(--sb-coral)",
+  docx: "var(--primary)",
 };
 
 const TYPE_ICON: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
@@ -30,15 +30,15 @@ const STATUS_COLORS: Record<string, string> = {
   queued: "text-white/40 bg-white/5",
   extracting: "text-amber-400 bg-amber-400/10",
   ocr: "text-amber-400 bg-amber-400/10",
-  embedding: "text-[#7F77DD] bg-[#7F77DD]/10",
-  indexed: "text-[#1D9E75] bg-[#1D9E75]/10",
+  embedding: "text-primary bg-primary/10",
+  indexed: "text-[var(--sb-teal)] bg-[var(--sb-teal)]/10",
   error: "text-red-400 bg-red-400/10",
 };
 
 function DocItem({ doc }: { doc: Document }) {
   const { setActiveDoc, state } = useApp();
   const Icon = TYPE_ICON[doc.type] ?? File;
-  const dot = TYPE_COLOR[doc.type] ?? "#7F77DD";
+  const dot = TYPE_COLOR[doc.type] ?? "var(--primary)";
   const isActive = state.activeDocId === doc.id;
 
   return (
@@ -46,7 +46,7 @@ function DocItem({ doc }: { doc: Document }) {
       onClick={() => setActiveDoc(isActive ? null : doc.id)}
       className={`w-full flex items-start gap-2.5 rounded-lg px-2.5 py-2 text-left transition-all
                   ${isActive
-          ? "bg-[#7F77DD]/10 border border-[#7F77DD]/20"
+          ? "bg-primary/10 border border-primary/20"
           : "hover:bg-white/[0.04] border border-transparent"
         }`}
     >
@@ -101,15 +101,16 @@ export function Sidebar() {
 
   const totalChunks = state.totalChunks;
   const docCount = state.documents.length;
-  const liveCount = state.documents.filter((d) => d.status === "indexed").length;
 
   return (
-    <aside className="w-[240px] shrink-0 flex flex-col border-r border-[#1E1E2E] bg-[#111118] overflow-hidden">
+    <aside className="w-[240px] shrink-0 flex flex-col border-r border-border bg-surface overflow-hidden">
       {/* Logo */}
-      <div className="px-4 pt-4 pb-3 border-b border-[#1E1E2E]">
+      <div className="px-4 pt-4 pb-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-[#7F77DD] to-[#5B53B5] 
-                          grid place-items-center shrink-0">
+          <div
+            className="h-7 w-7 rounded-lg grid place-items-center shrink-0"
+            style={{ background: "linear-gradient(135deg, var(--primary) 0%, #6b9c94 100%)" }}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="14"
@@ -135,7 +136,7 @@ export function Sidebar() {
             <span className="text-[13px] font-semibold text-white tracking-tight">
               second
             </span>
-            <span className="text-[13px] font-semibold text-[#7F77DD] tracking-tight">
+            <span className="text-[13px] font-semibold text-primary tracking-tight">
               brain
             </span>
           </div>
@@ -143,7 +144,7 @@ export function Sidebar() {
       </div>
 
       {/* Search */}
-      <div className="px-3 py-2.5 border-b border-[#1E1E2E]">
+      <div className="px-3 py-2.5 border-b border-border">
         <div className="relative">
           <Search
             size={12}
@@ -156,9 +157,9 @@ export function Sidebar() {
             placeholder="Search docs…"
             value={state.searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/[0.03] border border-[#1E1E2E] rounded-md pl-7 pr-8 py-1.5
+            className="w-full bg-white/[0.03] border border-border rounded-md pl-7 pr-8 py-1.5
                        text-[12px] text-white/80 placeholder:text-white/25
-                       focus:outline-none focus:border-[#7F77DD]/40 transition-colors"
+                       focus:outline-none focus:border-primary/40 transition-colors"
           />
           <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-white/20 
                           font-mono bg-white/5 px-1 rounded">
@@ -185,13 +186,13 @@ export function Sidebar() {
       </div>
 
       {/* Add documents button */}
-      <div className="p-3 border-t border-[#1E1E2E]">
+      <div className="p-3 border-t border-border">
         <button
           id="add-documents-btn"
           onClick={() => setUploadOpen(true)}
           className="w-full flex items-center justify-center gap-2 rounded-lg border border-dashed 
-                     border-[#7F77DD]/30 bg-[#7F77DD]/5 px-3 py-2 text-[12px] font-medium 
-                     text-[#7F77DD] transition-all hover:border-[#7F77DD]/50 hover:bg-[#7F77DD]/10"
+                     border-primary/30 bg-primary/5 px-3 py-2 text-[12px] font-medium 
+                     text-primary transition-all hover:border-primary/50 hover:bg-primary/10"
         >
           <Plus size={13} />
           Add documents
@@ -199,9 +200,10 @@ export function Sidebar() {
       </div>
 
       {/* Status bar */}
-      <div className="px-4 py-2 border-t border-[#1E1E2E] flex items-center gap-2">
+      <div className="px-4 py-2 border-t border-border flex items-center gap-2">
         <span
-          className="h-1.5 w-1.5 rounded-full bg-[#1D9E75] animate-pulse"
+          className="h-1.5 w-1.5 rounded-full animate-pulse"
+          style={{ backgroundColor: "var(--sb-teal)" }}
           aria-hidden="true"
         />
         <p className="text-[10px] text-white/30 leading-none">

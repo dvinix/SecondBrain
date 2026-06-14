@@ -32,14 +32,16 @@ export function FinalCTA() {
           className="mt-10 flex flex-wrap items-center justify-center gap-3"
         >
           <a
-            href="#"
+            href="/chat"
             className="group inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-primary to-secondary px-6 py-3.5 text-sm font-medium text-primary-foreground glow-primary hover:scale-[1.03] transition-transform"
           >
-            View Demo
+            Try Demo Now
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </a>
           <a
-            href="https://github.com"
+            href="https://github.com/dvinix/SecondBrain/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-xl glass px-6 py-3.5 text-sm font-medium text-white hover:bg-white/10 transition-colors"
           >
             <Github className="h-4 w-4" />
