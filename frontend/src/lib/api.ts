@@ -136,9 +136,33 @@ export async function* queryStream(
       if (jsonStr === "[DONE]") return;
 
       try {
-        const event = JSON.parse(jsonStr) as QueryEvent;
-        yield event;
-        if (event.type === "done" || event.type === "error") return;
+        const rawEvent = JSON.parse(jsonStr);
+        let event: QueryEvent | null = null;
+        const eventName = rawEvent.event || rawEvent.type;
+
+        if (eventName === "token") {
+          event = { type: "token", text: rawEvent.text || "" };
+        } else if (eventName === "reranked" || eventName === "sources" || eventName === "chunks_retrieved") {
+          event = {
+            type: "sources",
+            chunks: (rawEvent.chunks || []).map((c: any) => ({
+              docId: c.doc_id || c.docId || "",
+              filename: c.doc_name || c.filename || "unknown",
+              type: c.type || "unknown",
+              confidence: c.rerank_score !== undefined ? c.rerank_score / 10.0 : (c.rrf_score || 0.5),
+              snippet: c.text || "",
+            })),
+          };
+        } else if (eventName === "done") {
+          event = { type: "done" };
+        } else if (eventName === "error") {
+          event = { type: "error", message: rawEvent.message || "Unknown backend error" };
+        }
+
+        if (event) {
+          yield event;
+          if (event.type === "done" || event.type === "error") return;
+        }
       } catch {
         // Malformed SSE line — skip
       }

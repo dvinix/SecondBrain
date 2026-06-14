@@ -8,6 +8,10 @@ from core.generator import generate_stream, parse_citations
 from db.client import supabase
 
 
+# Toggle to bypass query expander and reranker for faster testing/debugging
+SKIP_EXPANSION_AND_RERANK = True
+
+
 def query_pipeline(
     question: str,
     session_id: Optional[str] = None,
@@ -32,7 +36,10 @@ def query_pipeline(
     yield {"event": "retrieval_start"}
 
     # Step 2: Expand query
-    queries = expand_query(question)
+    if SKIP_EXPANSION_AND_RERANK:
+        queries = [question]
+    else:
+        queries = expand_query(question)
 
     # Step 3: Retrieve for each query variant, merge
     all_chunks = []
@@ -62,7 +69,15 @@ def query_pipeline(
     yield {"event": "chunks_retrieved", "chunks": all_chunks, "count": len(all_chunks)}
 
     # Step 4: Rerank
-    reranked = rerank(question, all_chunks, top_k=top_k_rerank)
+    if SKIP_EXPANSION_AND_RERANK:
+        # Avoid breaking format/citations: attach a dummy rerank score
+        reranked = []
+        for i, chunk in enumerate(all_chunks[:top_k_rerank]):
+            c = chunk.copy()
+            c["rerank_score"] = 10 - i
+            reranked.append(c)
+    else:
+        reranked = rerank(question, all_chunks, top_k=top_k_rerank)
     yield {"event": "reranked", "chunks": reranked}
 
     # Step 5: Stream generation

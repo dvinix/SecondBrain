@@ -98,16 +98,20 @@ class DiskEmbeddingCache:
 
 class Embedder(Embeddings):
     """
-    Unified embedder supporting both 'local' (all-MiniLM-L6-v2 padded)
-    and 'gemini' (gemini-embedding-001) backends. Handles SQLite caching,
-    batching, and rate limiting with backoff.
+    Unified embedder supporting:
+      - 'local'  : BAAI/bge-base-en-v1.5 (768-dim native, asymmetric instruction prefix)
+      - 'gemini' : gemini-embedding-001 (768-dim, cloud)
+    Handles SQLite caching, batching, and rate limiting with backoff.
     """
 
     MODEL = "gemini-embedding-001"
-    BATCH_SIZE = 100        
-    RPM_LIMIT = 80          
-    RPD_LIMIT = 950         
+    BATCH_SIZE = 100
+    RPM_LIMIT = 80
+    RPD_LIMIT = 950
     DIMENSIONS = 768
+
+    # Local model name — used as part of the cache key
+    LOCAL_MODEL_NAME = "bge-base-en-v1.5"
 
     def __init__(self):
         self._request_times = []       # timestamps for RPM tracking
@@ -142,7 +146,7 @@ class Embedder(Embeddings):
         if backend == "gemini":
             model_name = f"{self.MODEL}-document"
         else:
-            model_name = "all-MiniLM-L6-v2-document"
+            model_name = f"{self.LOCAL_MODEL_NAME}-document"
 
         # Check Cache
         cached_embeddings = self.cache.get_many(model_name, texts)
@@ -194,7 +198,7 @@ class Embedder(Embeddings):
         if backend == "gemini":
             model_name = f"{self.MODEL}-query"
         else:
-            model_name = "all-MiniLM-L6-v2-query"
+            model_name = f"{self.LOCAL_MODEL_NAME}-query"
 
         # Check Cache
         cached = self.cache.get_many(model_name, [text])
@@ -209,9 +213,9 @@ class Embedder(Embeddings):
                 lambda: self._get_google_embeddings().embed_query(text)
             )
         else:
+            # BGE asymmetric: query side uses instruction prefix via embed_query()
             from core.local_embedder import local_embedder
-            raw_emb = local_embedder.embed_texts([text])[0]
-            embedding = pad_vector(raw_emb)
+            embedding = local_embedder.embed_query(text)
 
         # Cache the result
         self.cache.set_many(model_name, [(text, embedding)])

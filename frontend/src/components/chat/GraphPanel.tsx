@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import type { Document } from "@/context/AppContext";
-import ForceGraph2D from "react-force-graph-2d";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -135,9 +134,15 @@ export function GraphPanel() {
   const { state, setActiveDoc } = useApp();
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 320, height: 500 });
+  const [isClient, setIsClient] = useState(false);
+  const [ForceGraph2D, setForceGraph2D] = useState<any>(null);
 
-  // Resize observer
+  // Resize observer & Client side check
   useEffect(() => {
+    setIsClient(true);
+    import("react-force-graph-2d").then((mod) => {
+      setForceGraph2D(() => mod.default || mod);
+    });
     if (!containerRef.current) return;
     const ro = new ResizeObserver((entries) => {
       const rect = entries[0].contentRect;
@@ -206,25 +211,31 @@ export function GraphPanel() {
         </div>
       </div>
 
-      {hasDocuments ? (
-        <ForceGraph2D
-          graphData={graphData}
-          width={dimensions.width}
-          height={dimensions.height}
-          backgroundColor="var(--background)"
-          nodeCanvasObject={nodeCanvasObject as any}
-          nodeCanvasObjectMode={() => "replace"}
-          linkColor={() => "rgba(132,165,157,0.25)"}
-          linkWidth={(link) => (link as GraphLink).value * 2}
-          onNodeClick={(node) => {
-            const n = node as unknown as GraphNode;
-            setActiveDoc(state.activeDocId === n.id ? null : n.id);
-          }}
-          cooldownTicks={80}
-          d3AlphaDecay={0.03}
-          d3VelocityDecay={0.3}
-          nodeRelSize={1}
-        />
+      {hasDocuments && isClient ? (
+        ForceGraph2D ? (
+          <ForceGraph2D
+            graphData={graphData}
+            width={dimensions.width}
+            height={dimensions.height}
+            backgroundColor="var(--background)"
+            nodeCanvasObject={nodeCanvasObject as any}
+            nodeCanvasObjectMode={() => "replace"}
+            linkColor={() => "rgba(132,165,157,0.25)"}
+            linkWidth={(link) => (link as GraphLink).value * 2}
+            onNodeClick={(node: any) => {
+              const n = node as unknown as GraphNode;
+              setActiveDoc(state.activeDocId === n.id ? null : n.id);
+            }}
+            cooldownTicks={80}
+            d3AlphaDecay={0.03}
+            d3VelocityDecay={0.3}
+            nodeRelSize={1}
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-[10px] text-white/30 animate-pulse">Initializing graph...</span>
+          </div>
+        )
       ) : (
         <GraphEmptyState />
       )}

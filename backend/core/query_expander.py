@@ -4,7 +4,7 @@ import json
 import re
 from typing import List
 from core.llm_client import chat_model
-
+from config import LLM_BACKEND
 
 def expand_query(question: str) -> List[str]:
     """

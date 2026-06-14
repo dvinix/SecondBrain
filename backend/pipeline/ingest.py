@@ -14,6 +14,7 @@ from db.graph import compute_and_save_relationships
 
 def ingest_file(
     file_path: str,
+    original_filename: Optional[str] = None,
     progress_callback=None  # optional fn(step: str, pct: int)
 ) -> Dict:
     """
@@ -40,8 +41,8 @@ def ingest_file(
     # Step 2: Save document metadata to DB first (get doc_id)
     _progress(progress_callback, "saving metadata", 0)
     doc_id = save_document(
-        name=path.name,
-        file_type=path.suffix.lower().lstrip("."),
+        name=original_filename or path.name,
+        file_type=(Path(original_filename).suffix if original_filename else path.suffix).lower().lstrip("."),
         size_bytes=path.stat().st_size,
     )
     _progress(progress_callback, "saving metadata", 100)

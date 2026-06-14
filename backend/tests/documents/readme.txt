@@ -15,3 +15,17 @@ All responses include inline citations linking back to the source document and p
 The ingestion pipeline runs offline once per document and stores embeddings durably in the database.
 The query pipeline runs in real time on every user question and is optimized for sub-second first-token latency.
 Authentication and file management are handled by the FastAPI backend which exposes a REST API consumed by the frontend.
+
+- **LangChain** provides the building blocks: `Embeddings` wrapper for
+  Gemini, `VectorStore` wrapper for Supabase pgvector, `Document` objects
+  for chunks (carrying `page_content` + `metadata`), and `ChatGroq` /
+  `ChatGoogleGenerativeAI` chat model wrappers.
+- **LangGraph** orchestrates the query pipeline as an explicit **state
+  graph**: `expand_query → retrieve → (conditional) → rerank → generate`.
+  Each step is a node that reads/writes a shared `GraphState`. Conditional
+  edges branch on real signals (zero chunks found → skip straight to a
+  "not found" response, never calling the LLM unnecessarily).
+- The **ingestion pipeline stays plain Python** (chunking, extraction) —
+  LangChain doesn't materially improve those, and keeping them custom
+  keeps your semantic chunking and parent-child logic fully under your
+  control, which you'll want to explain to your mentor anyway.

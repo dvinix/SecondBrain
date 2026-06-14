@@ -134,48 +134,8 @@ function appReducer(state: AppState, action: AppAction): AppState {
 
 // ── Initial State ──────────────────────────────────────────────────────────────
 
-// Seeded demo documents so the UI looks populated on first load
-const DEMO_DOCS: Document[] = [
-  {
-    id: "doc-1",
-    filename: "attention-is-all-you-need.pdf",
-    type: "pdf",
-    chunkCount: 142,
-    status: "indexed",
-    size: 2_180_000,
-    similarities: { "doc-2": 0.82, "doc-3": 0.71 },
-  },
-  {
-    id: "doc-2",
-    filename: "chinchilla-scaling-laws.pdf",
-    type: "pdf",
-    chunkCount: 98,
-    status: "indexed",
-    size: 1_540_000,
-    similarities: { "doc-1": 0.82, "doc-3": 0.76 },
-  },
-  {
-    id: "doc-3",
-    filename: "research-notes-2024.md",
-    type: "md",
-    chunkCount: 34,
-    status: "indexed",
-    size: 42_000,
-    similarities: { "doc-1": 0.71, "doc-2": 0.76 },
-  },
-  {
-    id: "doc-4",
-    filename: "reading-list.txt",
-    type: "txt",
-    chunkCount: 12,
-    status: "indexed",
-    size: 8_200,
-    similarities: { "doc-3": 0.65 },
-  },
-];
-
 const initialState: AppState = {
-  documents: DEMO_DOCS,
+  documents: [],
   messages: [],
   isGraphOpen: false,
   isUploadOpen: false,
@@ -183,7 +143,7 @@ const initialState: AppState = {
   activeDocId: null,
   sessionName: "Research Session",
   searchQuery: "",
-  totalChunks: computeTotalChunks(DEMO_DOCS),
+  totalChunks: 0,
 };
 
 // ── Context ────────────────────────────────────────────────────────────────────

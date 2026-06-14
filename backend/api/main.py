@@ -2,6 +2,7 @@
 
 import json
 import uuid
+from typing import Optional
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -38,9 +39,13 @@ async def ingest(file: UploadFile = File(...)):
         tmp_path = tmp.name
 
     try:
-        result = ingest_file(tmp_path)
-        result["filename"] = file.filename
-        return result
+        result = ingest_file(tmp_path, original_filename=file.filename)
+        return {
+            "filename": file.filename,
+            "doc_id": result["doc_id"],
+            "chunks": result["chunk_count"],
+            "status": "indexed"
+        }
     except Exception as e:
         raise HTTPException(500, str(e))
     finally:
@@ -49,7 +54,7 @@ async def ingest(file: UploadFile = File(...)):
 
 class QueryRequest(BaseModel):
     question: str
-    session_id: str = None
+    session_id: Optional[str] = None
 
 
 @app.post("/query")

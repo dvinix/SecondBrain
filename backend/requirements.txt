@@ -18,3 +18,4 @@ pytest-asyncio
 httpx
 sentence-transformers 
 langchain-huggingface
+langchain-ollamalangchain-ollama
