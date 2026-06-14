@@ -22,7 +22,7 @@ SIMILARITY_EDGE_THRESHOLD = float(os.getenv("SIMILARITY_EDGE_THRESHOLD", 0.75))
 GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 GEMINI_FALLBACK_MODEL = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-2.5-flash")
 GROQ_RPM_LIMIT = int(os.getenv("GROQ_RPM_LIMIT", 28))
-EMBEDDING_BACKEND = os.getenv("EMBEDDING_BACKEND", "local").lower()
+EMBEDDING_BACKEND = os.getenv("EMBEDDING_BACKEND", "gemini").lower()
 
 print("SUPABASE_URL:", repr(SUPABASE_URL))
 print("SUPABASE_KEY loaded:", bool(SUPABASE_KEY))

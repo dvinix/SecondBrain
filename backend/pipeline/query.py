@@ -55,6 +55,10 @@ def query_pipeline(
                 })
                 seen_ids.add(chunk_id)
 
+    # Sort by RRF score descending and limit to top 15 chunks to keep LLM payload small and fast
+    all_chunks.sort(key=lambda x: x.get("rrf_score") or 0.0, reverse=True)
+    all_chunks = all_chunks[:15]
+
     yield {"event": "chunks_retrieved", "chunks": all_chunks, "count": len(all_chunks)}
 
     # Step 4: Rerank

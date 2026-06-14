@@ -10,13 +10,6 @@ from config import (
 
 
 class _RateLimitGuard:
-    """
-    LangChain's ChatGroq doesn't pre-check rate limits — it only reacts
-    after a 429. This guard lets the query pipeline check
-    `groq_rate_limit.available()` BEFORE building a chain, so LangGraph
-    nodes can route around Groq proactively (see Step 9) instead of
-    always paying for one failed call before falling back.
-    """
 
     def __init__(self, rpm_limit: int):
         self.rpm_limit = rpm_limit
@@ -40,6 +33,7 @@ groq_chat = ChatGroq(
     api_key=GROQ_API_KEY,
     temperature=0.1,
     max_tokens=1024,
+    max_retries=1,
 )
 # Fallback: Gemini 2.5 
 gemini_chat = ChatGoogleGenerativeAI(
@@ -47,10 +41,7 @@ gemini_chat = ChatGoogleGenerativeAI(
     google_api_key=GEMINI_API_KEY,
     temperature=0.1,
     max_output_tokens=1024,
+    max_retries=1,
 )
 
-# The object every other module imports bla bla...
-# LangChain's .with_fallbacks(): if groq_chat.invoke()/.stream() raises
-# for ANY reason (RateLimitError, timeout, connection error), the same
-# call is retried against gemini_chat automatically.
 chat_model = groq_chat.with_fallbacks([gemini_chat])

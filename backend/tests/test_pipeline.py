@@ -135,6 +135,8 @@ class TestQueryPipeline:
 
     def _run_pipeline(self, question, **kwargs):
         """Run query pipeline, skipping on rate limits."""
+        # Space out query runs to avoid hitting Gemini's strict 15 RPM chat limit on the free tier
+        time.sleep(4.0)
         try:
             return list(query_pipeline(question, **kwargs))
         except Exception as e:
@@ -153,7 +155,7 @@ class TestQueryPipeline:
         full_answer = "".join(tokens).lower()
         done_event = next((e for e in events if e["event"] == "done"), None)
 
-        print(f"\nQ: {question}")
+        print(f"\n{question}")
         print(f"A: {''.join(tokens)[:200]}...")
         print(f"Citations: {len(done_event.get('citations', []))}")
 
