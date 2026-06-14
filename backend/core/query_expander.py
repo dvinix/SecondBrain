@@ -3,7 +3,7 @@
 import json
 import re
 from typing import List
-from core.llm_client import llm
+from core.llm_client import chat_model
 
 
 def expand_query(question: str) -> List[str]:
@@ -33,7 +33,7 @@ Question: {question}
 Respond ONLY with a JSON array of 3 strings, no other text:
 ["original question", "alternative phrasing 1", "alternative phrasing 2"]"""
 
-    raw = llm.complete(prompt, temperature=0.3, max_tokens=256).strip()
+    raw = chat_model.invoke(prompt).content.strip()
 
     queries = _parse_queries(raw, question)
     return queries[:3]  # max 3 to stay within rate limits

@@ -2,7 +2,7 @@
 
 import re
 from typing import List, Dict, Generator
-from core.llm_client import llm
+from core.llm_client import chat_model
 
 
 def build_context(chunks: List[Dict]) -> str:
@@ -75,12 +75,9 @@ def generate_stream(
     context = build_context(chunks)
     prompt = build_prompt(question, context, conversation_history)
 
-    yield from llm.complete(
-        prompt,
-        temperature=0.1,  # low temp = factual, less hallucination
-        max_tokens=1024,
-        stream=True,
-    )
+    for chunk in chat_model.stream(prompt):
+        if chunk.content:
+            yield chunk.content
 
 
 def parse_citations(answer: str, chunks: List[Dict]) -> Dict:

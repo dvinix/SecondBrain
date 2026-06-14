@@ -16,3 +16,5 @@ rank-bm25
 pytest 
 pytest-asyncio 
 httpx
+sentence-transformers 
+langchain-huggingface

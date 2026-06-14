@@ -3,7 +3,7 @@
 import json
 import re
 from typing import List, Dict
-from core.llm_client import llm
+from core.llm_client import chat_model
 from config import RERANK_TOP_K
 
 
@@ -48,7 +48,7 @@ Score each passage 1-10 for how directly it answers the question.
 Respond ONLY with valid JSON array, no other text:
 [{{"index": 0, "score": 8}}, {{"index": 1, "score": 3}}, ...]"""
 
-    raw = llm.complete(prompt, temperature=0.0, max_tokens=512).strip()
+    raw = chat_model.invoke(prompt).content.strip()
 
     scores = _parse_scores(raw, len(chunks))
 
