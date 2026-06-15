@@ -42,18 +42,25 @@ def build_prompt(question: str, context: str, conversation_history: List[Dict] =
             turns.append(f"{role}: {turn['content']}")
         history_text = "\nConversation history:\n" + "\n".join(turns) + "\n"
 
-    return f"""You are SecondBrain, a helpful, conversational, and highly intelligent personal knowledge assistant.
-Your goal is to provide detailed and well-explained answers using the provided source passages.
-For every factual claim, you MUST add a citation like [1] or [2] referencing the source number.
-If the answer is not in the sources, kindly say "I couldn't find information about this in your documents."
-Be conversational and structure your answer nicely (using paragraphs or bullet points if helpful), just like ChatGPT would. Do not invent information beyond what the sources contain, but explain the retrieved information thoroughly.
+    return f"""You are SecondBrain, a highly intelligent and professional personal knowledge assistant.
+You are tasked with answering a user's question accurately using ONLY the retrieved context provided below.
+
+INSTRUCTIONS:
+1. You MUST use Markdown bullet points (`* `) and paragraphs to structure your answer. NEVER output a single giant block of text.
+2. You MUST use Markdown bold (`**text**`) for emphasis.
+3. Base your facts ONLY on the provided context. For every factual claim, you MUST add a citation like [1] or [2] referencing the source number.
+4. Maintain a professional, analytical, and objective tone.
+5. If the context only answers part of the question, answer the part you DO know and clearly state that the specific details for the rest are not available in the documents.
+6. Do NOT just say "I could not find that information" if you can answer at least a portion of the user's question.
+7. ONLY say "I could not find information about this in your documents." if the context has absolutely NO relevance to any part of the question.
 {history_text}
-Sources:
+Context:
 {context}
 
-Question: {question}
+Question:
+{question}
 
-Answer:"""
+Detailed Answer:"""
 
 
 def generate_stream(
@@ -63,14 +70,6 @@ def generate_stream(
 ) -> Generator[str, None, None]:
     """
     Stream the generated answer token by token.
-
-    Uses Groq Llama 3.3 70B for speed (300+ tok/s). If Groq's 28 RPM
-    budget is exhausted (tracked in core.llm_client), this transparently
-    falls back to Gemini 2.0 Flash streaming — the caller sees no
-    difference, just a slightly slower stream.
-
-    Yields:
-        String tokens as they arrive
     """
     context = build_context(chunks)
     prompt = build_prompt(question, context, conversation_history)

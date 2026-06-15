@@ -49,7 +49,7 @@ export type QueryEvent =
       confidence: number;
       snippet: string;
     }> }
-  | { type: "done" }
+  | { type: "done"; citations?: Array<{ filename: string; page?: number; docId: string }> }
   | { type: "error"; message: string };
 
 // ── Guard ─────────────────────────────────────────────────────────────────────
@@ -154,7 +154,13 @@ export async function* queryStream(
             })),
           };
         } else if (eventName === "done") {
-          event = { type: "done" };
+          const mappedCitations = (rawEvent.citations || []).map((c: any) => ({
+            filename: c.doc_name || c.filename || "unknown",
+            page: c.page || c.page_number,
+            docId: c.doc_id || c.docId || "",
+            ref: c.ref,
+          }));
+          event = { type: "done", citations: mappedCitations };
         } else if (eventName === "error") {
           event = { type: "error", message: rawEvent.message || "Unknown backend error" };
         }

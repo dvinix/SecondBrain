@@ -9,7 +9,7 @@ from db.client import supabase
 
 
 # Toggle to bypass query expander and reranker for faster testing/debugging
-SKIP_EXPANSION_AND_RERANK = True
+SKIP_EXPANSION_AND_RERANK = False
 
 
 def query_pipeline(
@@ -18,6 +18,10 @@ def query_pipeline(
     top_k_retrieve: int = 20,
     top_k_rerank: int = 5,
 ) -> Generator:
+    import traceback
+    print(f"\n=== QUERY PIPELINE CALLED: '{question}' ===")
+    print(f"Called from:\n{''.join(traceback.format_stack()[-3:])}")
+
     """
     Full query pipeline. Yields structured events for streaming.
 

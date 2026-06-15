@@ -45,7 +45,7 @@ else:
         api_key=GROQ_API_KEY,
         temperature=0.1,
         max_tokens=1024,
-        max_retries=1,
+        max_retries=0,
     )
     # Fallback: Gemini 2.5
     gemini_chat = ChatGoogleGenerativeAI(
@@ -53,7 +53,7 @@ else:
         google_api_key=GEMINI_API_KEY,
         temperature=0.1,
         max_output_tokens=1024,
-        max_retries=1,
+        max_retries=0,
     )
 
     chat_model = groq_chat.with_fallbacks([gemini_chat])

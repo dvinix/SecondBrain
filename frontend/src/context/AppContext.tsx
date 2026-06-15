@@ -35,6 +35,7 @@ export interface Citation {
   page?: number;
   docId: string;
   chunkIndex?: number;
+  ref?: number;
 }
 
 export interface SourceChunk {
