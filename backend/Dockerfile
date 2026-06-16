@@ -5,7 +5,7 @@ FROM python:3.11-slim
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PORT=8000 \
+    PORT=7860 \
     HF_HOME=/app/hf_cache
 
 # Set working directory
@@ -34,7 +34,7 @@ COPY . .
 RUN mkdir -p /app/hf_cache && chmod -R 777 /app
 
 # Expose port (informative)
-EXPOSE 8000
+EXPOSE 7860
 
 # Start Uvicorn, dynamically binding to the port set by the deployment server
 CMD ["sh", "-c", "uvicorn api.main:app --host 0.0.0.0 --port ${PORT}"]
