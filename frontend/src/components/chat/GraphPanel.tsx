@@ -221,7 +221,7 @@ export function GraphPanel() {
             nodeCanvasObject={nodeCanvasObject as any}
             nodeCanvasObjectMode={() => "replace"}
             linkColor={() => "rgba(132,165,157,0.25)"}
-            linkWidth={(link) => (link as GraphLink).value * 2}
+            linkWidth={(link: any) => (link as GraphLink).value * 2}
             onNodeClick={(node: any) => {
               const n = node as unknown as GraphNode;
               setActiveDoc(state.activeDocId === n.id ? null : n.id);

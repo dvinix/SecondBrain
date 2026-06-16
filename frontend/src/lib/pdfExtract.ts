@@ -37,8 +37,8 @@ async function extractWithPdfJs(file: File): Promise<{ text: string; confidence:
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
     const pageText = content.items
-      .filter((item): item is { str: string } => "str" in item)
-      .map((item) => item.str)
+      .filter((item: any) => "str" in item)
+      .map((item: any) => item.str)
       .join(" ");
     pageTexts.push(pageText);
   }
@@ -86,7 +86,7 @@ async function extractWithTesseract(
     canvas.height = viewport.height;
     const ctx = canvas.getContext("2d")!;
 
-    await page.render({ canvasContext: ctx, viewport }).promise;
+    await page.render({ canvasContext: ctx, viewport } as any).promise;
 
     const imageData = canvas.toDataURL("image/png");
     const result = await worker.recognize(imageData);

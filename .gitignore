@@ -2,3 +2,9 @@
 node_modules
 *.log
 .DS_Store
+__pycache__/
+*.pyc
+.env
+hf_space/
+embeddings_cache.db
+.pytest_cache/
