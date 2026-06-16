@@ -21,8 +21,8 @@ export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
       } else {
         const { error: signUpError } = await supabase.auth.signUp({ email, password });
         if (signUpError) throw signUpError;
-        // Supabase might require email confirmation depending on settings
-        setError("Check your email for the confirmation link! (If auto-confirm is off)");
+        // Supabase requires email confirmation
+        setError("A verification email has been sent to your inbox. Please verify your email to log in.");
         setLoading(false);
         return;
       }
@@ -35,16 +35,29 @@ export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-950 px-4 text-zinc-50 relative overflow-hidden">
-      {/* Subtle background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
+    <div className="relative min-h-screen flex items-center justify-center bg-background px-4">
+      {/* Background glow matching landing page */}
+      <div className="absolute -inset-10 -z-10 rounded-[40px] bg-gradient-to-tr from-primary/30 via-secondary/20 to-transparent blur-3xl opacity-60 pointer-events-none" />
       
-      <div className="max-w-md w-full z-10 space-y-8 p-8 sm:p-10 rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-2xl shadow-2xl">
-        <div className="flex flex-col items-center">
-          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 mb-6 shadow-inner">
-            <Lock className="w-8 h-8 text-indigo-400" />
+      <div className="w-full max-w-md z-10 glass-strong rounded-2xl shadow-elegant overflow-hidden">
+        {/* Top bar (macOS traffic lights) */}
+        <div className="flex items-center gap-1.5 px-4 py-3 border-b border-border bg-black/10">
+          <div className="h-2.5 w-2.5 rounded-full bg-white/10" />
+          <div className="h-2.5 w-2.5 rounded-full bg-white/10" />
+          <div className="h-2.5 w-2.5 rounded-full bg-white/10" />
+          <div className="ml-3 text-[11px] text-muted-foreground font-['Inter']">secondbrain.app / auth</div>
+        </div>
+
+        <div className="p-8 sm:p-10 space-y-8 bg-zinc-900/30">
+          <div className="flex flex-col items-center">
+          <div className="relative p-4 rounded-2xl bg-[#0E1A14] border border-[#1D9E75] mb-6 shadow-inner">
+            <Lock className="w-8 h-8 text-[#1D9E75]" />
+            <div className="absolute -top-3 -right-6 flex items-center gap-1.5 rounded-full bg-[#0E1A14] border border-[#1D9E75]/30 px-2 py-0.5 text-[10px] font-medium text-[#1D9E75] shadow-sm">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#1D9E75] animate-pulse"></div>
+              Live
+            </div>
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Knowledge Vault</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-white font-['Sora']">Welcome Back!</h2>
           <p className="mt-3 text-sm text-zinc-400 text-center leading-relaxed">
             {isLogin ? "Sign in to access your personal knowledge base." : "Create an account to start your vault."}
           </p>
@@ -58,7 +71,7 @@ export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-white/10 bg-black/40 pl-12 pr-5 py-4 text-white placeholder-zinc-500 focus:border-indigo-500/50 focus:bg-black/60 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all text-sm"
+              className="w-full rounded-xl border border-white/10 bg-black/40 pl-12 pr-5 py-4 text-white placeholder-zinc-500 focus:border-[#1D9E75]/50 focus:bg-black/60 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/20 transition-all text-sm font-['Inter']"
               placeholder="Email address"
             />
           </div>
@@ -69,7 +82,7 @@ export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-white/10 bg-black/40 pl-12 pr-5 py-4 text-white placeholder-zinc-500 focus:border-indigo-500/50 focus:bg-black/60 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all text-sm"
+              className="w-full rounded-xl border border-white/10 bg-black/40 pl-12 pr-5 py-4 text-white placeholder-zinc-500 focus:border-[#1D9E75]/50 focus:bg-black/60 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/20 transition-all text-sm font-['Inter']"
               placeholder="Password"
             />
           </div>
@@ -79,7 +92,7 @@ export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-4 px-4 rounded-xl text-sm font-semibold bg-white text-black hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-lg shadow-white/10 disabled:opacity-50"
+            className="w-full flex justify-center py-4 px-4 rounded-xl text-sm font-semibold bg-transparent border border-[#1D9E75] text-[#1D9E75] hover:bg-[#1D9E75]/10 transition-all active:scale-[0.98] shadow-[0_0_15px_rgba(29,158,117,0.15)] disabled:opacity-50 font-['Sora']"
           >
             {loading ? "Authenticating..." : (isLogin ? "Sign In" : "Sign Up")}
           </button>
@@ -93,6 +106,7 @@ export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
           >
             {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
           </button>
+          </div>
         </div>
       </div>
     </div>

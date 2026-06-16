@@ -6,10 +6,10 @@ interface SourceCardProps {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  pdf: "#7F77DD",
+  pdf: "#1D9E75",
   md: "#1D9E75",
   txt: "#E86A58",
-  docx: "#7F77DD",
+  docx: "#1D9E75",
 };
 
 const TYPE_ICONS: Record<string, string> = {
@@ -44,7 +44,7 @@ function ConfidenceBar({ value }: { value: number }) {
 
 export function SourceCard({ source }: SourceCardProps) {
   const { setActiveDoc } = useApp();
-  const dot = TYPE_COLORS[source.type] ?? "#7F77DD";
+  const dot = TYPE_COLORS[source.type] ?? "#1D9E75";
   const icon = TYPE_ICONS[source.type] ?? "📄";
 
   return (
@@ -60,7 +60,7 @@ export function SourceCard({ source }: SourceCardProps) {
           className="shrink-0 h-1.5 w-1.5 rounded-full"
           style={{ backgroundColor: dot }}
         />
-        <span className="text-[11px] text-white/80 font-medium truncate leading-tight">
+        <span className="text-[11px] text-white/80 font-medium truncate leading-tight font-['Sora']">
           {source.filename}
         </span>
       </div>

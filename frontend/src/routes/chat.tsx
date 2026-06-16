@@ -4,7 +4,7 @@ import { ChatScreen } from "@/components/chat/ChatScreen";
 export const Route = createFileRoute("/chat")({
   head: () => ({
     meta: [
-      { title: "SecondBrain — Chat" },
+      { title: "SecondBrain Chat" },
       {
         name: "description",
         content:

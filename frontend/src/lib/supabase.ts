@@ -1,8 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import type { SourceChunk, DocType } from "@/context/AppContext";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://placeholder.supabase.co";
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "placeholder_key";
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 

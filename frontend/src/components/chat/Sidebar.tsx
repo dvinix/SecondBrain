@@ -107,17 +107,15 @@ export function Sidebar() {
       {/* Logo */}
       <div className="px-4 pt-4 pb-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <div
-            className="h-7 w-7 rounded-lg grid place-items-center shrink-0"
-            style={{ background: "linear-gradient(135deg, var(--primary) 0%, #6b9c94 100%)" }}
-          >
+          <div className="relative h-8 w-8 rounded-lg bg-[#0E1A14] border border-[#1D9E75] grid place-items-center shrink-0">
+            {/* Brain SVG */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
+              width="16"
+              height="16"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="white"
+              stroke="#1D9E75"
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -131,12 +129,17 @@ export function Sidebar() {
               <path d="M6 18a4 4 0 0 1-2-7.464" />
               <path d="M6.003 5.125a4 4 0 0 0-2.526 5.77" />
             </svg>
+            {/* Live Badge */}
+            <div className="absolute -top-1.5 -right-2 flex items-center gap-1 rounded-full bg-[#0E1A14] border border-[#1D9E75]/30 px-1 py-0.5 text-[8px] font-medium text-[#1D9E75]">
+              <div className="w-1 h-1 rounded-full bg-[#1D9E75] animate-pulse"></div>
+              Live
+            </div>
           </div>
           <div>
-            <span className="text-[13px] font-semibold text-white tracking-tight">
+            <span className="text-[14px] font-semibold text-white tracking-tight font-['Sora']">
               second
             </span>
-            <span className="text-[13px] font-semibold text-primary tracking-tight">
+            <span className="text-[14px] font-semibold text-primary tracking-tight font-['Sora']">
               brain
             </span>
           </div>
@@ -191,8 +194,8 @@ export function Sidebar() {
           id="add-documents-btn"
           onClick={() => setUploadOpen(true)}
           className="w-full flex items-center justify-center gap-2 rounded-lg border border-dashed 
-                     border-primary/30 bg-primary/5 px-3 py-2 text-[12px] font-medium 
-                     text-primary transition-all hover:border-primary/50 hover:bg-primary/10"
+                     border-[#1D9E75]/50 bg-transparent px-3 py-2 text-[12px] font-medium font-['Sora']
+                     text-[#1D9E75] transition-all hover:border-[#1D9E75] hover:bg-[#1D9E75]/10 shadow-[0_0_10px_rgba(29,158,117,0.05)]"
         >
           <Plus size={13} />
           Add documents

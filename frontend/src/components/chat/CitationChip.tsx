@@ -16,9 +16,9 @@ export function CitationChip({ citation }: CitationChipProps) {
     <button
       onClick={() => setActiveDoc(citation.docId)}
       title={`Jump to ${citation.filename}`}
-      className="inline-flex items-center gap-1 rounded-full border border-[#7F77DD]/30 bg-[#7F77DD]/10 
-                 px-2 py-0.5 text-[11px] font-medium text-[#EEEDFE] transition-all 
-                 hover:bg-[#7F77DD]/20 hover:border-[#7F77DD]/50 cursor-pointer leading-none"
+      className="inline-flex items-center gap-1 rounded-full border border-[#1D9E75]/30 bg-[#1D9E75]/10 
+                 px-2 py-0.5 text-[11px] font-medium text-[#1D9E75] transition-all 
+                 hover:bg-[#1D9E75]/20 hover:border-[#1D9E75]/50 cursor-pointer leading-none font-['Sora']"
     >
       <span className="opacity-60 font-normal">[</span>
       {label}

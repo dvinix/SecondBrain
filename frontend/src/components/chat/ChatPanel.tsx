@@ -56,7 +56,7 @@ function EmptyState({
             <path d="M6.003 5.125a4 4 0 0 0-2.526 5.77" />
           </svg>
         </div>
-        <p className="text-[13px] text-white/40 font-medium">
+        <p className="text-[14px] text-white/60 font-medium font-['Sora']">
           Ask anything across your knowledge base
         </p>
         <p className="text-[11px] text-white/20 mt-1">
@@ -124,8 +124,8 @@ function SessionName() {
   return (
     <button
       onClick={() => setEditing(true)}
-      className="group flex items-center gap-1.5 text-[13px] font-medium text-white/70 
-                 hover:text-white/90 transition-colors"
+      className="group flex items-center gap-1.5 text-[14px] font-medium text-white/70 
+                 hover:text-white/90 transition-colors font-['Sora']"
     >
       {state.sessionName}
       <Pencil
@@ -349,8 +349,8 @@ To get real answers powered by the backend, start the Python server and set VITE
             className={`relative flex items-end gap-3 rounded-2xl border bg-surface px-4 py-3 
                          transition-all duration-200
                          ${state.isQuerying || input.length > 0
-                ? "border-[var(--sb-purple)]/40 shadow-[0_0_0_1px_rgba(127,119,221,0.15),0_0_24px_rgba(127,119,221,0.09)]"
-                : "border-border focus-within:border-[var(--sb-purple)]/40 focus-within:shadow-[0_0_0_1px_rgba(127,119,221,0.15),0_0_24px_rgba(127,119,221,0.09)]"
+                ? "border-[var(--sb-purple)]/40 shadow-[0_0_0_1px_rgba(29,158,117,0.15),0_0_24px_rgba(29,158,117,0.09)]"
+                : "border-border focus-within:border-[var(--sb-purple)]/40 focus-within:shadow-[0_0_0_1px_rgba(29,158,117,0.15),0_0_24px_rgba(29,158,117,0.09)]"
               }`}
           >
             <textarea

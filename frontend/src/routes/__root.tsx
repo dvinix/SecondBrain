@@ -79,10 +79,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "SecondBrain — Your Personal Knowledge Operating System" },
+      { title: "SecondBrain Your Personal Knowledge Operating System" },
       { name: "description", content: "Upload PDFs, papers, notes and bookmarks. Ask questions across everything and visualize how ideas connect with an AI-powered knowledge graph." },
       { name: "author", content: "SecondBrain" },
-      { property: "og:title", content: "SecondBrain — Your Personal Knowledge OS" },
+      { property: "og:title", content: "SecondBrain Your Personal Knowledge OS" },
       { property: "og:description", content: "AI-powered retrieval, citations and an interactive knowledge graph for your entire library." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -93,7 +93,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700;800&display=swap" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700;800&family=Sora:wght@400;500;600;700;800&display=swap" },
     ],
   }),
   shellComponent: RootShell,
@@ -118,6 +118,8 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  const currentPath = router.state.location.pathname;
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -138,8 +140,8 @@ function RootComponent() {
 
   if (loading) return null;
 
-  if (!session) {
-    return <AuthScreen onAuthSuccess={() => {}} />;
+  if (!session && currentPath !== "/") {
+    return <AuthScreen onAuthSuccess={() => { }} />;
   }
 
   return (
