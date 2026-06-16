@@ -1,4 +1,4 @@
-from db.client import supabase
+from db.client import get_client
 from db.models import save_document, list_documents
 
 print

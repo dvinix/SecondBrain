@@ -1,7 +1,7 @@
 # db/chunks.py
 
 from typing import List, Dict
-from db.client import supabase
+from db.client import get_client
 
 
 def save_chunks(doc_id: str, chunks: List[Dict], embeddings: List[List[float]]):
@@ -27,15 +27,15 @@ def save_chunks(doc_id: str, chunks: List[Dict], embeddings: List[List[float]]):
     batch_size = 50
     for i in range(0, len(rows), batch_size):
         batch = rows[i:i + batch_size]
-        supabase.table("chunks").insert(batch).execute()
+        get_client().table("chunks").insert(batch).execute()
 
 
 def get_chunks_by_doc(doc_id: str) -> List[Dict]:
     """Get all chunks for a document."""
-    result = supabase.table("chunks").select("*").eq("doc_id", doc_id).order("chunk_index").execute()
+    result = get_client().table("chunks").select("*").eq("doc_id", doc_id).order("chunk_index").execute()
     return result.data or []
 
 
 def delete_chunks(doc_id: str):
     """Delete all chunks for a document."""
-    supabase.table("chunks").delete().eq("doc_id", doc_id).execute()
+    get_client().table("chunks").delete().eq("doc_id", doc_id).execute()

@@ -2,7 +2,7 @@
 
 from langchain_community.vectorstores import SupabaseVectorStore
 from core.embedder import embedder
-from db.client import supabase
+from db.client import get_client
 
 
 def get_vectorstore() -> SupabaseVectorStore:
@@ -29,7 +29,7 @@ def get_vectorstore() -> SupabaseVectorStore:
     search and LangGraph retriever nodes.
     """
     return SupabaseVectorStore(
-        client=supabase,
+        client=get_client(),
         embedding=embedder.lc_embeddings,
         table_name="chunks",
         query_name="match_chunks",

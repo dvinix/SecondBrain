@@ -5,7 +5,7 @@ from core.query_expander import expand_query
 from core.retriever import hybrid_retriever
 from core.reranker import rerank
 from core.generator import generate_stream, parse_citations
-from db.client import supabase
+
 
 
 # Toggle to bypass query expander and reranker for faster testing/debugging

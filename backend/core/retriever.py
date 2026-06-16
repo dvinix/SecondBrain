@@ -10,7 +10,7 @@ from langchain_core.callbacks import CallbackManagerForRetrieverRun
 from pydantic import Field
 
 from core.embedder import embedder as global_embedder
-from db.client import supabase
+from db.client import get_client
 
 
 def reciprocal_rank_fusion(  #RRF 
@@ -55,9 +55,13 @@ def vector_search(query_vector: List[float], top_k: int = 20) -> List[Dict]:
     Perform cosine similarity search in Supabase using pgvector.
     Calls the match_chunks SQL function defined in schema.sql.
     """
-    response = supabase.rpc(
+    response = get_client().rpc(
         "match_chunks",
-        {"query_embedding": query_vector, "match_count": top_k}
+        {
+            "query_embedding": query_vector,
+            "match_threshold": 0.5,
+            "match_count": top_k
+        }
     ).execute()
 
     return response.data or []
@@ -80,7 +84,7 @@ def keyword_search(query: str, top_k: int = 20) -> List[Dict]:
     search_pattern = " | ".join(search_terms)
 
     response = (
-        supabase.table("chunks")
+        get_client().table("chunks")
         .select("id, doc_id, text, parent_text, page_number, chunk_index, documents(name)")
         .limit(top_k)
         .text_search("text", search_pattern)

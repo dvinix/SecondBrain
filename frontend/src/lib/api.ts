@@ -5,7 +5,18 @@
  * local Gemini+Supabase pipeline when VITE_API_URL is not set.
  */
 
+import { supabase } from "./supabase";
+
 const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, "");
+
+async function getHeaders(extraHeaders: Record<string, string> = {}) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const headers: Record<string, string> = { ...extraHeaders };
+  if (session?.access_token) {
+    headers["Authorization"] = `Bearer ${session.access_token}`;
+  }
+  return headers;
+}
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -73,6 +84,7 @@ export async function ingestFile(file: File): Promise<IngestResult> {
 
   const res = await fetch(`${BASE_URL}/ingest`, {
     method: "POST",
+    headers: await getHeaders(),
     body: form,
   });
 
@@ -103,7 +115,7 @@ export async function* queryStream(
 
   const res = await fetch(`${BASE_URL}/query`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: await getHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify({ question, session_id: sessionId }),
   });
 
@@ -182,7 +194,7 @@ export async function* queryStream(
 export async function listDocuments(): Promise<ApiDocument[]> {
   if (!BASE_URL) throw new Error("VITE_API_URL is not set");
 
-  const res = await fetch(`${BASE_URL}/documents`);
+  const res = await fetch(`${BASE_URL}/documents`, { headers: await getHeaders() });
   if (!res.ok) throw new Error(`Failed to fetch documents (${res.status})`);
   return res.json() as Promise<ApiDocument[]>;
 }
@@ -193,7 +205,7 @@ export async function listDocuments(): Promise<ApiDocument[]> {
 export async function getGraph(): Promise<GraphData> {
   if (!BASE_URL) throw new Error("VITE_API_URL is not set");
 
-  const res = await fetch(`${BASE_URL}/graph`);
+  const res = await fetch(`${BASE_URL}/graph`, { headers: await getHeaders() });
   if (!res.ok) throw new Error(`Failed to fetch graph (${res.status})`);
   return res.json() as Promise<GraphData>;
 }

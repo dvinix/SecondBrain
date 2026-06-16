@@ -1,7 +1,7 @@
 # db/graph.py
 
 from typing import List, Dict
-from db.client import supabase
+from db.client import get_client
 from core.embedder import embedder
 from config import SIMILARITY_EDGE_THRESHOLD
 
@@ -26,14 +26,14 @@ def compute_and_save_relationships(doc_id: str):
     Creates edges in doc_relationships table for visualization.
     """
     # Get the new document's centroid
-    doc_result = supabase.table("documents").select("embedding_centroid").eq("id", doc_id).execute()
+    doc_result = get_client().table("documents").select("embedding_centroid").eq("id", doc_id).execute()
     if not doc_result.data or not doc_result.data[0].get("embedding_centroid"):
         return
     
     new_centroid = _parse_vector(doc_result.data[0]["embedding_centroid"])
     
     # Get all other documents
-    others = supabase.table("documents").select("id, embedding_centroid").neq("id", doc_id).execute()
+    others = get_client().table("documents").select("id, embedding_centroid").neq("id", doc_id).execute()
     
     relationships = []
     for other in others.data or []:
@@ -51,7 +51,7 @@ def compute_and_save_relationships(doc_id: str):
             })
     
     if relationships:
-        supabase.table("doc_relationships").insert(relationships).execute()
+        get_client().table("doc_relationships").insert(relationships).execute()
 
 
 def get_document_graph() -> Dict:
@@ -60,10 +60,10 @@ def get_document_graph() -> Dict:
     Returns nodes (documents) and edges (relationships).
     """
     # Get all documents
-    docs = supabase.table("documents").select("id, name, chunk_count").execute()
+    docs = get_client().table("documents").select("id, name, chunk_count").execute()
     
     # Get all relationships
-    edges = supabase.table("doc_relationships").select("doc_id_a, doc_id_b, similarity").execute()
+    edges = get_client().table("doc_relationships").select("doc_id_a, doc_id_b, similarity").execute()
     
     return {
         "nodes": [{"id": d["id"], "name": d["name"], "size": d["chunk_count"]} for d in docs.data or []],

@@ -4,14 +4,7 @@ import type { SourceChunk, DocType } from "@/context/AppContext";
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
-function getClient() {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    throw new Error(
-      "Supabase env vars are not set. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env file."
-    );
-  }
-  return createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-}
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -47,7 +40,6 @@ export async function insertDocument(doc: {
   type: DocType;
   chunk_count: number;
 }): Promise<void> {
-  const supabase = getClient();
   const { error } = await supabase.from("documents").insert({
     id: doc.id,
     filename: doc.filename,
@@ -59,7 +51,6 @@ export async function insertDocument(doc: {
 }
 
 export async function getDocuments(): Promise<DbDocument[]> {
-  const supabase = getClient();
   const { data, error } = await supabase
     .from("documents")
     .select("*")
@@ -78,8 +69,6 @@ export async function insertChunks(
     chunk_index: number;
   }>
 ): Promise<void> {
-  const supabase = getClient();
-
   // Insert in batches of 50 to avoid payload limits
   const batchSize = 50;
   for (let i = 0; i < chunks.length; i += batchSize) {
@@ -98,10 +87,6 @@ export async function insertChunks(
 
 // ── Vector Search ──────────────────────────────────────────────────────────────
 
-/**
- * Search for the top-k most similar chunks to a query embedding.
- * Calls the `match_chunks` Postgres function which uses pgvector.
- */
 export async function searchChunks(
   embedding: number[],
   opts: {
@@ -111,7 +96,6 @@ export async function searchChunks(
   } = {}
 ): Promise<SourceChunk[]> {
   const { topK = 8, threshold = 0.4, docId } = opts;
-  const supabase = getClient();
 
   const { data, error } = await supabase.rpc("match_chunks", {
     query_embedding: embedding,
@@ -141,12 +125,7 @@ export async function searchChunks(
 
 // ── Similarity Matrix ──────────────────────────────────────────────────────────
 
-/**
- * Get pairwise document similarities (pre-computed via Supabase function).
- * Used to draw edges in the knowledge graph.
- */
 export async function getDocumentSimilarities(): Promise<SimilarityResult[]> {
-  const supabase = getClient();
   const { data, error } = await supabase.rpc("document_similarities");
   if (error) {
     console.warn("Could not fetch document similarities:", error.message);

@@ -1,9 +1,9 @@
-from db.client import supabase
+from db.client import get_client
 from typing import Dict, List, Any
 import uuid
 
 def save_document(name: str, file_type: str, size_bytes: int) -> str:
-    result = supabase.table("documents").insert({
+    result = get_client().table("documents").insert({
         "name": name,
         "type": file_type,
         "size_bytes": size_bytes,
@@ -15,7 +15,7 @@ def update_chunk_count(doc_id: str, count: int, centroid: List[float] = None):
     data = {"chunk_count": count}
     if centroid:
         data["embedding_centroid"] = centroid
-    supabase.table("documents").update(data).eq("id", doc_id).execute()
+    get_client().table("documents").update(data).eq("id", doc_id).execute()
 
 def save_chunks(doc_id: str, chunks: List[Dict], embeddings: List[List[float]]):
     rows = []
@@ -28,7 +28,7 @@ def save_chunks(doc_id: str, chunks: List[Dict], embeddings: List[List[float]]):
             "chunk_index": i,
             "embedding": emb
         })
-    supabase.table("chunks").insert(rows).execute()
+    get_client().table("chunks").insert(rows).execute()
 
 def list_documents():
-    return supabase.table("documents").select("*").order("created_at", desc=True).execute().data
+    return get_client().table("documents").select("*").order("created_at", desc=True).execute().data

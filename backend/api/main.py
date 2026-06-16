@@ -3,12 +3,14 @@
 import json
 import uuid
 from typing import Optional
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Security, Depends
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 import tempfile, os
 
+from db.client import create_scoped_client, scoped_client_var
 from pipeline.ingest import ingest_file
 from pipeline.query import query_pipeline
 from db.documents import list_documents
@@ -23,8 +25,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+security = HTTPBearer()
 
-@app.post("/ingest")
+def get_auth_client(credentials: HTTPAuthorizationCredentials = Security(security)):
+    token = credentials.credentials
+    try:
+        client = create_scoped_client(token)
+        user_res = client.auth.get_user()
+        if not user_res or not user_res.user:
+            raise HTTPException(status_code=401, detail="Invalid auth token")
+        scoped_client_var.set(client)
+        return client
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Authentication failed: {str(e)}")
+
+@app.post("/ingest", dependencies=[Depends(get_auth_client)])
 async def ingest(file: UploadFile = File(...)):
     """Upload and index a document."""
     allowed_types = [".pdf", ".md", ".txt"]
@@ -57,7 +72,7 @@ class QueryRequest(BaseModel):
     session_id: Optional[str] = None
 
 
-@app.post("/query")
+@app.post("/query", dependencies=[Depends(get_auth_client)])
 async def query(req: QueryRequest):
     """Query across indexed documents. Returns Server-Sent Events stream."""
     session_id = req.session_id or str(uuid.uuid4())
@@ -73,13 +88,13 @@ async def query(req: QueryRequest):
     )
 
 
-@app.get("/documents")
+@app.get("/documents", dependencies=[Depends(get_auth_client)])
 async def documents():
     """List all indexed documents with metadata."""
     return list_documents()
 
 
-@app.get("/graph")
+@app.get("/graph", dependencies=[Depends(get_auth_client)])
 async def graph():
     """Return document relationship graph for the frontend visualization."""
     return get_document_graph()
