@@ -31,7 +31,7 @@ def get_auth_client(credentials: HTTPAuthorizationCredentials = Security(securit
     token = credentials.credentials
     try:
         client = create_scoped_client(token)
-        user_res = client.auth.get_user()
+        user_res = client.auth.get_user(token)
         if not user_res or not user_res.user:
             raise HTTPException(status_code=401, detail="Invalid auth token")
         scoped_client_var.set(client)
@@ -103,3 +103,7 @@ async def graph():
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+@app.get("/")
+async def root():
+    return {"message": "Welcome to the SecondBrain API"}

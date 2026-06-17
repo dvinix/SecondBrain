@@ -1,6 +1,6 @@
 import os
 from contextvars import ContextVar
-from supabase import create_client, Client
+from supabase import create_client, Client, ClientOptions
 from config import SUPABASE_URL, SUPABASE_KEY
 from dotenv import load_dotenv
 
@@ -21,5 +21,5 @@ def create_scoped_client(jwt_token: str) -> Client:
     return create_client(
         SUPABASE_URL,
         SUPABASE_KEY,
-        options={"global": {"headers": {"Authorization": f"Bearer {jwt_token}"}}}
+        options=ClientOptions(headers={"Authorization": f"Bearer {jwt_token}"})
     )
