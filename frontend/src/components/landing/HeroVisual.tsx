@@ -36,10 +36,6 @@ export function HeroVisual() {
           <div className="relative p-6 border-b lg:border-b-0 lg:border-r border-border">
             <div className="flex items-center justify-between mb-4">
               <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Knowledge Graph</div>
-              <div className="flex gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse-glow" />
-                <span className="text-[10px] text-muted-foreground">Live</span>
-              </div>
             </div>
 
             <div className="relative aspect-[4/3] w-full">

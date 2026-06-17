@@ -5,6 +5,7 @@ from core.query_expander import expand_query
 from core.retriever import hybrid_retriever
 from core.reranker import rerank
 from core.generator import generate_stream, parse_citations
+from db.client import get_client
 
 
 
@@ -104,7 +105,7 @@ def query_pipeline(
 
 def _load_history(session_id: str) -> List[Dict]:
     response = (
-        supabase.table("conversations")
+        get_client().table("conversations")
         .select("role, content")
         .eq("session_id", session_id)
         .order("created_at", desc=False)
@@ -115,7 +116,7 @@ def _load_history(session_id: str) -> List[Dict]:
 
 
 def _save_turn(session_id: str, role: str, content: str, chunk_ids: List = None):
-    supabase.table("conversations").insert({
+    get_client().table("conversations").insert({
         "session_id": session_id,
         "role": role,
         "content": content,

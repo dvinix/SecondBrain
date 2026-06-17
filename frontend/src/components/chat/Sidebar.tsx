@@ -107,42 +107,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="px-4 pt-4 pb-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <div className="relative h-8 w-8 rounded-lg bg-[#0E1A14] border border-[#1D9E75] grid place-items-center shrink-0">
-            {/* Brain SVG */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#1D9E75"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 18V5" />
-              <path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" />
-              <path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5" />
-              <path d="M17.997 5.125a4 4 0 0 1 2.526 5.77" />
-              <path d="M18 18a4 4 0 0 0 2-7.464" />
-              <path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517" />
-              <path d="M6 18a4 4 0 0 1-2-7.464" />
-              <path d="M6.003 5.125a4 4 0 0 0-2.526 5.77" />
-            </svg>
-            {/* Live Badge */}
-            <div className="absolute -top-1.5 -right-2 flex items-center gap-1 rounded-full bg-[#0E1A14] border border-[#1D9E75]/30 px-1 py-0.5 text-[8px] font-medium text-[#1D9E75]">
-              <div className="w-1 h-1 rounded-full bg-[#1D9E75] animate-pulse"></div>
-              Live
-            </div>
-          </div>
-          <div>
-            <span className="text-[14px] font-semibold text-white tracking-tight font-['Sora']">
-              second
-            </span>
-            <span className="text-[14px] font-semibold text-primary tracking-tight font-['Sora']">
-              brain
-            </span>
-          </div>
+          <img src="/favicon.svg" alt="SecondBrain Logo" className="w-8 h-8" />
         </div>
       </div>
 
@@ -160,14 +125,10 @@ export function Sidebar() {
             placeholder="Search docs…"
             value={state.searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/[0.03] border border-border rounded-md pl-7 pr-8 py-1.5
+            className="w-full bg-white/[0.03] border border-border rounded-md pl-7 pr-4 py-1.5
                        text-[12px] text-white/80 placeholder:text-white/25
                        focus:outline-none focus:border-primary/40 transition-colors"
           />
-          <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-white/20 
-                          font-mono bg-white/5 px-1 rounded">
-            ⌘K
-          </kbd>
         </div>
       </div>
 
@@ -194,8 +155,8 @@ export function Sidebar() {
           id="add-documents-btn"
           onClick={() => setUploadOpen(true)}
           className="w-full flex items-center justify-center gap-2 rounded-lg border border-dashed 
-                     border-[#1D9E75]/50 bg-transparent px-3 py-2 text-[12px] font-medium font-['Sora']
-                     text-[#1D9E75] transition-all hover:border-[#1D9E75] hover:bg-[#1D9E75]/10 shadow-[0_0_10px_rgba(29,158,117,0.05)]"
+                     border-primary/50 bg-transparent px-3 py-2 text-[12px] font-medium font-['Sora']
+                     text-primary transition-all hover:border-primary hover:bg-primary/10 shadow-[0_0_10px_rgba(132,165,157,0.05)]"
         >
           <Plus size={13} />
           Add documents
@@ -206,12 +167,12 @@ export function Sidebar() {
       <div className="px-4 py-2 border-t border-border flex items-center gap-2">
         <span
           className="h-1.5 w-1.5 rounded-full animate-pulse"
-          style={{ backgroundColor: "var(--sb-teal)" }}
+          style={{ backgroundColor: "var(--primary)" }}
           aria-hidden="true"
         />
         <p className="text-[10px] text-white/30 leading-none">
           {docCount} doc{docCount !== 1 ? "s" : ""} ·{" "}
-          {totalChunks.toLocaleString()} chunks · index live
+          {totalChunks.toLocaleString()} chunks
         </p>
       </div>
     </aside>

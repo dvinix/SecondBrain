@@ -205,10 +205,6 @@ export function GraphPanel() {
             Knowledge Graph
           </span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ backgroundColor: "var(--sb-teal)" }} />
-          <span className="text-[10px] text-white/30">Live</span>
-        </div>
       </div>
 
       {hasDocuments && isClient ? (

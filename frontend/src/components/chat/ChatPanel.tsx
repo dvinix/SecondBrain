@@ -314,7 +314,7 @@ To get real answers powered by the backend, start the Python server and set VITE
         <button
           id="graph-toggle-btn"
           onClick={() => setGraphOpen(!state.isGraphOpen)}
-          title="Toggle knowledge graph (⌘/)"
+          title="Toggle knowledge graph"
           className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-[12px] font-medium 
                       border transition-all
                       ${state.isGraphOpen
@@ -322,9 +322,7 @@ To get real answers powered by the backend, start the Python server and set VITE
               : "border-border text-white/40 hover:text-white/70 hover:border-border"
             }`}
         >
-          <GitBranch size={13} />
-          <span>Graph</span>
-          <kbd className="text-[9px] font-mono opacity-50">⌘/</kbd>
+          <GitBranch size={14} className={state.isGraphOpen ? "text-primary" : ""} />
         </button>
       </div>
 
@@ -349,8 +347,8 @@ To get real answers powered by the backend, start the Python server and set VITE
             className={`relative flex items-end gap-3 rounded-2xl border bg-surface px-4 py-3 
                          transition-all duration-200
                          ${state.isQuerying || input.length > 0
-                ? "border-[var(--sb-purple)]/40 shadow-[0_0_0_1px_rgba(29,158,117,0.15),0_0_24px_rgba(29,158,117,0.09)]"
-                : "border-border focus-within:border-[var(--sb-purple)]/40 focus-within:shadow-[0_0_0_1px_rgba(29,158,117,0.15),0_0_24px_rgba(29,158,117,0.09)]"
+                ? "border-primary/40 shadow-[0_0_0_1px_rgba(132,165,157,0.15),0_0_24px_rgba(132,165,157,0.09)]"
+                : "border-border focus-within:border-primary/40 focus-within:shadow-[0_0_0_1px_rgba(132,165,157,0.15),0_0_24px_rgba(132,165,157,0.09)]"
               }`}
           >
             <textarea
@@ -359,7 +357,7 @@ To get real answers powered by the backend, start the Python server and set VITE
               value={input}
               onChange={handleTextareaChange}
               onKeyDown={handleKeyDown}
-              placeholder={`Ask across your ${state.documents.length} docs… (⌘↵ to send)`}
+              placeholder={`Ask across your ${state.documents.length} docs…`}
               rows={1}
               disabled={state.isQuerying}
               className="flex-1 resize-none bg-transparent text-[13px] text-white/90 
@@ -370,7 +368,7 @@ To get real answers powered by the backend, start the Python server and set VITE
               id="send-btn"
               onClick={sendMessage}
               disabled={!input.trim() || state.isQuerying}
-              className="shrink-0 h-8 w-8 rounded-lg bg-[var(--sb-purple)] grid place-items-center 
+              className="shrink-0 h-8 w-8 rounded-lg bg-primary grid place-items-center 
                          transition-all hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <Send size={14} className="text-white" />

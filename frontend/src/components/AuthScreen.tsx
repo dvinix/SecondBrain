@@ -50,14 +50,10 @@ export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
 
         <div className="p-8 sm:p-10 space-y-8 bg-zinc-900/30">
           <div className="flex flex-col items-center">
-          <div className="relative p-4 rounded-2xl bg-[#0E1A14] border border-[#1D9E75] mb-6 shadow-inner">
-            <Lock className="w-8 h-8 text-[#1D9E75]" />
-            <div className="absolute -top-3 -right-6 flex items-center gap-1.5 rounded-full bg-[#0E1A14] border border-[#1D9E75]/30 px-2 py-0.5 text-[10px] font-medium text-[#1D9E75] shadow-sm">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#1D9E75] animate-pulse"></div>
-              Live
-            </div>
+          <div className="relative mb-6">
+            <img src="/favicon.svg" alt="Logo" className="w-14 h-14 drop-shadow-[0_0_15px_rgba(132,165,157,0.5)]" />
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-white font-['Sora']">Welcome Back!</h2>
+          <h2 className="text-4xl font-bold tracking-tight text-gradient-brand font-['Sora'] pb-1">Welcome Back!</h2>
           <p className="mt-3 text-sm text-zinc-400 text-center leading-relaxed">
             {isLogin ? "Sign in to access your personal knowledge base." : "Create an account to start your vault."}
           </p>
@@ -71,7 +67,7 @@ export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-white/10 bg-black/40 pl-12 pr-5 py-4 text-white placeholder-zinc-500 focus:border-[#1D9E75]/50 focus:bg-black/60 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/20 transition-all text-sm font-['Inter']"
+              className="w-full rounded-xl border border-white/10 bg-black/40 pl-12 pr-5 py-4 text-white placeholder-zinc-500 focus:border-primary/50 focus:bg-black/60 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-['Inter']"
               placeholder="Email address"
             />
           </div>
@@ -82,7 +78,7 @@ export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-white/10 bg-black/40 pl-12 pr-5 py-4 text-white placeholder-zinc-500 focus:border-[#1D9E75]/50 focus:bg-black/60 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/20 transition-all text-sm font-['Inter']"
+              className="w-full rounded-xl border border-white/10 bg-black/40 pl-12 pr-5 py-4 text-white placeholder-zinc-500 focus:border-primary/50 focus:bg-black/60 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-['Inter']"
               placeholder="Password"
             />
           </div>
@@ -92,7 +88,7 @@ export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-4 px-4 rounded-xl text-sm font-semibold bg-transparent border border-[#1D9E75] text-[#1D9E75] hover:bg-[#1D9E75]/10 transition-all active:scale-[0.98] shadow-[0_0_15px_rgba(29,158,117,0.15)] disabled:opacity-50 font-['Sora']"
+            className="w-full flex justify-center py-4 px-4 rounded-xl text-sm font-semibold bg-transparent border border-primary text-primary hover:bg-primary/10 transition-all active:scale-[0.98] shadow-[0_0_15px_rgba(132,165,157,0.15)] disabled:opacity-50 font-['Sora']"
           >
             {loading ? "Authenticating..." : (isLogin ? "Sign In" : "Sign Up")}
           </button>
