@@ -1,11 +1,12 @@
 # db/chunks.py
 
 from typing import List, Dict
-from db.client import get_client
+from db.client import get_client, current_user_id_var
 
 
 def save_chunks(doc_id: str, chunks: List[Dict], embeddings: List[List[float]]):
     """Save chunks with their embeddings to the database."""
+    user_id = current_user_id_var.get()
     rows = []
     for i, (chunk, emb) in enumerate(zip(chunks, embeddings)):
         # Coerce to plain Python floats before sending to pgvector.
@@ -20,7 +21,8 @@ def save_chunks(doc_id: str, chunks: List[Dict], embeddings: List[List[float]]):
             "parent_text": chunk.get("parent_text", chunk["text"]),
             "page_number": chunk["page_number"],
             "chunk_index": i,
-            "embedding": clean_emb
+            "embedding": clean_emb,
+            "user_id": user_id
         })
     
     # Insert in batches to avoid payload size limits

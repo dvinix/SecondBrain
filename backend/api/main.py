@@ -10,7 +10,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 import tempfile, os
 
-from db.client import create_scoped_client, scoped_client_var
+from db.client import create_scoped_client, scoped_client_var, current_user_id_var
 from pipeline.ingest import ingest_file
 from pipeline.query import query_pipeline
 from db.documents import list_documents
@@ -35,6 +35,7 @@ def get_auth_client(credentials: HTTPAuthorizationCredentials = Security(securit
         if not user_res or not user_res.user:
             raise HTTPException(status_code=401, detail="Invalid auth token")
         scoped_client_var.set(client)
+        current_user_id_var.set(user_res.user.id)
         return client
     except Exception as e:
         raise HTTPException(status_code=401, detail=f"Authentication failed: {str(e)}")

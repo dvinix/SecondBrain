@@ -1,17 +1,19 @@
 # db/documents.py
 
 from typing import List, Dict, Optional
-from db.client import get_client
+from db.client import get_client, current_user_id_var
 import uuid
 
 
 def save_document(name: str, file_type: str, size_bytes: int) -> str:
     """Save document metadata and return document ID."""
+    user_id = current_user_id_var.get()
     result = get_client().table("documents").insert({
         "name": name,
         "type": file_type,
         "size_bytes": size_bytes,
-        "chunk_count": 0
+        "chunk_count": 0,
+        "user_id": user_id
     }).execute()
     return result.data[0]["id"]
 

@@ -65,7 +65,11 @@ def get_document_graph() -> Dict:
     # Get all relationships
     edges = get_client().table("doc_relationships").select("doc_id_a, doc_id_b, similarity").execute()
     
+    docs_data = docs.data or []
+    doc_ids = {d["id"] for d in docs_data}
+    edges_data = [e for e in (edges.data or []) if e["doc_id_a"] in doc_ids and e["doc_id_b"] in doc_ids]
+    
     return {
-        "nodes": [{"id": d["id"], "name": d["name"], "size": d["chunk_count"]} for d in docs.data or []],
-        "edges": [{"source": e["doc_id_a"], "target": e["doc_id_b"], "similarity": e["similarity"]} for e in edges.data or []]
+        "nodes": [{"id": d["id"], "name": d["name"], "size": d["chunk_count"]} for d in docs_data],
+        "edges": [{"source": e["doc_id_a"], "target": e["doc_id_b"], "similarity": e["similarity"]} for e in edges_data]
     }
