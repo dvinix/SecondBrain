@@ -27,7 +27,7 @@ app.add_middleware(
 
 security = HTTPBearer()
 
-def get_auth_client(credentials: HTTPAuthorizationCredentials = Security(security)):
+async def get_auth_client(credentials: HTTPAuthorizationCredentials = Security(security)):
     token = credentials.credentials
     try:
         client = create_scoped_client(token)
