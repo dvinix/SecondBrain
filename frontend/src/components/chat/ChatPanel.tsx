@@ -9,11 +9,12 @@ import {
 import { useApp } from "@/context/AppContext";
 import { MessageBubble } from "./MessageBubble";
 import type { Message, SourceChunk } from "@/context/AppContext";
-import { Send, GitBranch, Pencil, Check } from "lucide-react";
+import { Send, GitBranch, Pencil, Check, LogOut } from "lucide-react";
 import { queryStream, isBackendAvailable } from "@/lib/api";
 import { streamAnswer, parseCitations } from "@/lib/gemini";
 import { searchChunks } from "@/lib/supabase";
 import { generateEmbedding } from "@/lib/gemini";
+import { supabase } from "@/lib/supabase";
 
 // ── Suggested questions ────────────────────────────────────────────────────────
 
@@ -56,7 +57,7 @@ function EmptyState({
             <path d="M6.003 5.125a4 4 0 0 0-2.526 5.77" />
           </svg>
         </div>
-        <p className="text-[14px] text-white/60 font-medium font-['Sora']">
+        <p className="text-[14px] text-white/60 font-medium font-display">
           Ask anything across your knowledge base
         </p>
         <p className="text-[11px] text-white/20 mt-1">
@@ -125,7 +126,7 @@ function SessionName() {
     <button
       onClick={() => setEditing(true)}
       className="group flex items-center gap-1.5 text-[14px] font-medium text-white/70 
-                 hover:text-white/90 transition-colors font-['Sora']"
+                 hover:text-white/90 transition-colors font-display"
     >
       {state.sessionName}
       <Pencil
@@ -311,19 +312,31 @@ To get real answers powered by the backend, start the Python server and set VITE
       {/* Top bar */}
       <div className="flex items-center justify-between px-5 py-3 border-b border-border shrink-0 bg-surface/40">
         <SessionName />
-        <button
-          id="graph-toggle-btn"
-          onClick={() => setGraphOpen(!state.isGraphOpen)}
-          title="Toggle knowledge graph"
-          className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-[12px] font-medium 
-                      border transition-all
-                      ${state.isGraphOpen
-              ? "border-primary/30 bg-primary/10 text-primary"
-              : "border-border text-white/40 hover:text-white/70 hover:border-border"
-            }`}
-        >
-          <GitBranch size={14} className={state.isGraphOpen ? "text-primary" : ""} />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            id="graph-toggle-btn"
+            onClick={() => setGraphOpen(!state.isGraphOpen)}
+            title="Toggle knowledge graph"
+            className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-[12px] font-medium 
+                        border transition-all
+                        ${state.isGraphOpen
+                ? "border-primary/30 bg-primary/10 text-primary"
+                : "border-border text-white/40 hover:text-white/70 hover:border-border"
+              }`}
+          >
+            <GitBranch size={14} className={state.isGraphOpen ? "text-primary" : ""} />
+          </button>
+          
+          <button
+            onClick={async () => {
+              await supabase.auth.signOut();
+            }}
+            title="Log out"
+            className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-[12px] font-medium border border-border text-white/40 hover:text-white/70 hover:border-border transition-all hover:bg-white/5"
+          >
+            <LogOut size={14} />
+          </button>
+        </div>
       </div>
 
       {/* Messages area */}

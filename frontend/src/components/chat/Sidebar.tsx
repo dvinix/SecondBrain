@@ -1,7 +1,7 @@
 import { useRef, useEffect, useCallback } from "react";
 import { useApp } from "@/context/AppContext";
 import type { Document } from "@/context/AppContext";
-import { Search, Plus, FileText, FileCode, File, AlignLeft } from "lucide-react";
+import { Search, Plus, FileText, FileCode, File, AlignLeft, Brain } from "lucide-react";
 
 const TYPE_COLOR: Record<string, string> = {
   pdf: "var(--primary)",
@@ -106,8 +106,13 @@ export function Sidebar() {
     <aside className="w-[240px] shrink-0 flex flex-col border-r border-border bg-surface overflow-hidden">
       {/* Logo */}
       <div className="px-4 pt-4 pb-3 border-b border-border">
-        <div className="flex items-center gap-2">
-          <img src="/favicon.svg" alt="SecondBrain Logo" className="w-8 h-8" />
+        <div className="flex items-center gap-2.5 group">
+          <div className="relative h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-secondary grid place-items-center glow-primary shrink-0">
+            <Brain className="h-4 w-4 text-white" strokeWidth={2.5} />
+          </div>
+          <span className="font-display font-semibold text-white tracking-tight text-[17px]">
+            SecondBrain
+          </span>
         </div>
       </div>
 
@@ -155,7 +160,7 @@ export function Sidebar() {
           id="add-documents-btn"
           onClick={() => setUploadOpen(true)}
           className="w-full flex items-center justify-center gap-2 rounded-lg border border-dashed 
-                     border-primary/50 bg-transparent px-3 py-2 text-[12px] font-medium font-['Sora']
+                     border-primary/50 bg-transparent px-3 py-2 text-[12px] font-medium font-display
                      text-primary transition-all hover:border-primary hover:bg-primary/10 shadow-[0_0_10px_rgba(132,165,157,0.05)]"
         >
           <Plus size={13} />

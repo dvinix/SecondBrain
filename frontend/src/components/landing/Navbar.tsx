@@ -34,8 +34,8 @@ export function Navbar() {
           }`}
         >
           <a href="#" className="flex items-center gap-2.5 group">
-            <div className="relative h-8 w-8 rounded-lg grid place-items-center glow-primary">
-              <img src="/favicon.svg" alt="SecondBrain Logo" className="w-8 h-8" />
+            <div className="relative h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-secondary grid place-items-center glow-primary">
+              <Brain className="h-4 w-4 text-white" strokeWidth={2.5} />
             </div>
             <span className="font-display font-semibold text-white tracking-tight text-[17px]">
               SecondBrain

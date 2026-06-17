@@ -60,7 +60,7 @@ export function SourceCard({ source }: SourceCardProps) {
           className="shrink-0 h-1.5 w-1.5 rounded-full"
           style={{ backgroundColor: dot }}
         />
-        <span className="text-[11px] text-white/80 font-medium truncate leading-tight font-['Sora']">
+        <span className="text-[11px] text-white/80 font-medium truncate leading-tight font-display">
           {source.filename}
         </span>
       </div>

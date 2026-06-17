@@ -201,7 +201,7 @@ export function GraphPanel() {
       <div className="absolute top-0 inset-x-0 z-10 flex items-center justify-between 
                       px-4 py-3 border-b border-border bg-background/90 backdrop-blur-sm">
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-medium text-white/40 uppercase tracking-wider font-['Sora']">
+          <span className="text-[11px] font-medium text-white/40 uppercase tracking-wider font-display">
             Knowledge Graph
           </span>
         </div>

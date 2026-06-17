@@ -18,7 +18,7 @@ export function CitationChip({ citation }: CitationChipProps) {
       title={`Jump to ${citation.filename}`}
       className="inline-flex items-center gap-1 rounded-full border border-[#1D9E75]/30 bg-[#1D9E75]/10 
                  px-2 py-0.5 text-[11px] font-medium text-[#1D9E75] transition-all 
-                 hover:bg-[#1D9E75]/20 hover:border-[#1D9E75]/50 cursor-pointer leading-none font-['Sora']"
+                 hover:bg-[#1D9E75]/20 hover:border-[#1D9E75]/50 cursor-pointer leading-none font-display"
     >
       <span className="opacity-60 font-normal">[</span>
       {label}

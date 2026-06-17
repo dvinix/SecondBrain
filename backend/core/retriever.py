@@ -59,7 +59,6 @@ def vector_search(query_vector: List[float], top_k: int = 20) -> List[Dict]:
         "match_chunks",
         {
             "query_embedding": query_vector,
-            "match_threshold": 0.5,
             "match_count": top_k
         }
     ).execute()
