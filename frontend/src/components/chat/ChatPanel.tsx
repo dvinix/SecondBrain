@@ -58,10 +58,7 @@ function EmptyState({
           </svg>
         </div>
         <p className="text-[14px] text-white/60 font-medium font-display">
-          Ask anything across your knowledge base
-        </p>
-        <p className="text-[11px] text-white/20 mt-1">
-          Powered by semantic retrieval + AI synthesis
+          Ask anything across your Knowledge Base
         </p>
       </div>
 

@@ -33,12 +33,12 @@ def ingest_file(
     path = Path(file_path)
     _progress(progress_callback, "extracting text", 0)
 
-    # Step 1: Extract text
+    # Extract text
     pages = extract(file_path)
     scanned_pages = sum(1 for p in pages if p.get("is_scanned"))
     _progress(progress_callback, "extracting text", 100)
 
-    # Step 2: Save document metadata to DB first (get doc_id)
+    # Save document metadata to DB first (get doc_id)
     _progress(progress_callback, "saving metadata", 0)
     doc_id = save_document(
         name=original_filename or path.name,
@@ -47,11 +47,7 @@ def ingest_file(
     )
     _progress(progress_callback, "saving metadata", 100)
 
-    # Step 3: Semantic chunking
-    # IMPORTANT: uses the LOCAL all-MiniLM-L6-v2 model for sentence-level
-    # boundary detection — zero Gemini API calls, runs entirely on CPU.
-    # Gemini is reserved for the final chunk embeddings (Step 4) which are
-    # stored in pgvector and need high-quality asymmetric task_type vectors.
+    # Semantic chunking
     _progress(progress_callback, "chunking", 0)
     chunks = semantic_chunk(
         pages=pages,
@@ -69,22 +65,22 @@ def ingest_file(
             "warning": "No text could be extracted from this document.",
         }
 
-    # Step 4: Embed all child chunks
+    # Embed all child chunks
     _progress(progress_callback, "embedding", 0)
     chunk_texts = [c["text"] for c in chunks]
     embeddings = embedder.embed_texts(chunk_texts)
     _progress(progress_callback, "embedding", 100)
 
-    # Step 5: Compute document centroid (for graph)
+    # Compute document centroid (for graph)
     centroid = embedder.compute_centroid(embeddings)
 
-    # Step 6: Save chunks to Supabase
+    # Save chunks to Supabase
     _progress(progress_callback, "indexing", 0)
     save_chunks(doc_id=doc_id, chunks=chunks, embeddings=embeddings)
     update_chunk_count(doc_id=doc_id, count=len(chunks), centroid=centroid)
     _progress(progress_callback, "indexing", 100)
 
-    # Step 7: Update document graph edges
+    # Update document graph edges
     _progress(progress_callback, "building graph", 0)
     compute_and_save_relationships(doc_id)
     _progress(progress_callback, "building graph", 100)

@@ -142,7 +142,7 @@ const initialState: AppState = {
   isUploadOpen: false,
   isQuerying: false,
   activeDocId: null,
-  sessionName: "Research Session",
+  sessionName: "Knowledge Base",
   searchQuery: "",
   totalChunks: 0,
 };
