@@ -104,8 +104,13 @@ def query_pipeline(
 
 
 def _load_history(session_id: str) -> List[Dict]:
-    response = (
-        get_client().table("conversations")
+    from supabase import create_client, Client
+supabase: Client = create_client(
+    'https://your-supabase-url.com',
+    'your-supabase-key'
+)
+response = (
+        supabase.table("conversations")
         .select("role, content")
         .eq("session_id", session_id)
         .order("created_at", desc=False)
