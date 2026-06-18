@@ -109,7 +109,8 @@ supabase_url: str = "https://your-supabase-url.supabase.co"
 supabase_key: str = "your-supabase-key"
 supabase: Client = create_client(supabase_url, supabase_key)
 response = (
-        supabase.table("conversations")
+        supabase: Client = create_client(supabase_url, supabase_key)
+supabase.table("conversations")
         .select("role, content")
         .eq("session_id", session_id)
         .order("created_at", desc=False)
