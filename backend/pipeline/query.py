@@ -6,12 +6,16 @@ from core.retriever import hybrid_retriever
 from core.reranker import rerank
 from core.generator import generate_stream, parse_citations
 from db.client import get_client
-
-
+import supabase
+from supabase import create_client, Client
 
 # Toggle to bypass query expander and reranker for faster testing/debugging
 SKIP_EXPANSION_AND_RERANK = False
 
+# Initialize supabase client
+supabase_url = "https://your-supabase-url.supabase.co"
+supabase_key = "your-supabase-key"
+supabase: Client = create_client(supabase_url, supabase_key)
 
 def query_pipeline(
     question: str,
@@ -27,18 +31,18 @@ def query_pipeline(
     Full query pipeline. Yields structured events for streaming.
 
     Event types yielded:
-        {"event": "retrieval_start"}
-        {"event": "chunks_retrieved", "chunks": [...], "count": N}
-        {"event": "reranked", "chunks": [...]}
-        {"event": "token", "text": "..."}        ← stream tokens
-        {"event": "done", "citations": [...]}
+        {{"event": "retrieval_start"}}
+        {{"event": "chunks_retrieved", "chunks": [...], "count": N}}
+        {{"event": "reranked", "chunks": [...]}}
+        {{"event": "token", "text": "..."}}        ← stream tokens
+        {{"event": "done", "citations": [...]}}
 
     The frontend listens to these events and updates the UI progressively.
     """
     # Step 1: Load conversation history
     history = _load_history(session_id) if session_id else []
 
-    yield {"event": "retrieval_start"}
+    yield {{"event": "retrieval_start"}}
 
     # Step 2: Expand query
     if SKIP_EXPANSION_AND_RERANK:
@@ -71,7 +75,7 @@ def query_pipeline(
     all_chunks.sort(key=lambda x: x.get("rrf_score") or 0.0, reverse=True)
     all_chunks = all_chunks[:15]
 
-    yield {"event": "chunks_retrieved", "chunks": all_chunks, "count": len(all_chunks)}
+    yield {{"event": "chunks_retrieved", "chunks": all_chunks, "count": len(all_chunks)}}
 
     # Step 4: Rerank
     if SKIP_EXPANSION_AND_RERANK:
@@ -83,13 +87,13 @@ def query_pipeline(
             reranked.append(c)
     else:
         reranked = rerank(question, all_chunks, top_k=top_k_rerank)
-    yield {"event": "reranked", "chunks": reranked}
+    yield {{"event": "reranked", "chunks": reranked}}
 
     # Step 5: Stream generation
     full_answer = ""
     for token in generate_stream(question, reranked, history):
         full_answer += token
-        yield {"event": "token", "text": token}
+        yield {{"event": "token", "text": token}}
 
     # Step 6: Parse citations
     result = parse_citations(full_answer, reranked)
@@ -100,12 +104,12 @@ def query_pipeline(
         _save_turn(session_id, "assistant", full_answer,
                    chunk_ids=[c["id"] for c in reranked])
 
-    yield {"event": "done", "citations": result["citations"]}
+    yield {{"event": "done", "citations": result["citations"]}}
 
 
 def _load_history(session_id: str) -> List[Dict]:
     response = (
-        get_client().table("conversations")
+        supabase.table("conversations")
         .select("role, content")
         .eq("session_id", session_id)
         .order("created_at", desc=False)
@@ -116,7 +120,7 @@ def _load_history(session_id: str) -> List[Dict]:
 
 
 def _save_turn(session_id: str, role: str, content: str, chunk_ids: List = None):
-    get_client().table("conversations").insert({
+    supabase.table("conversations").insert({
         "session_id": session_id,
         "role": role,
         "content": content,
