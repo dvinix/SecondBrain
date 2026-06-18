@@ -9,9 +9,6 @@ export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Deliberate type error: Vite dev mode ignores this, but production `tsc` build will fail!
-  const triggerProductionFail: number = "This string assigned to a number will fail the production build";
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
