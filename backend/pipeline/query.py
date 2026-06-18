@@ -105,6 +105,7 @@ def query_pipeline(
 
 def _load_history(session_id: str) -> List[Dict]:
     from supabase import create_client, Client
+from supabase import create_client, Client
 supabase: Client = create_client(
     'https://your-supabase-url.com',
     'your-supabase-key'
