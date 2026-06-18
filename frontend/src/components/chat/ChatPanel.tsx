@@ -384,13 +384,6 @@ To get real answers powered by the backend, start the Python server and set VITE
               <Send size={14} className="text-white" />
             </button>
           </div>
-
-          <p className="mt-2 text-[11px] text-white/20 text-center">
-            {isBackendAvailable()
-              ? `Backend connected · ${state.totalChunks.toLocaleString()} chunks indexed`
-              : `Searching ${state.totalChunks.toLocaleString()} chunks · Demo mode`
-            }
-          </p>
         </div>
       </div>
     </div>
