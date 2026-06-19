@@ -106,7 +106,7 @@ def query_pipeline(
 def _load_history(session_id: str) -> List[Dict]:
     from db.client import get_client
 response = (
-        get_client().supabase
+        get_client().supabase_client
         .from_('conversations')
         .select("role, content")
         .eq("session_id", session_id)
