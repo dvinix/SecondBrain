@@ -7,6 +7,6 @@ __pycache__/
 .env
 
 
-# hf_space/
+hf_space/
 embeddings_cache.db
 .pytest_cache/

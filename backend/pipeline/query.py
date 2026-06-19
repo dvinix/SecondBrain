@@ -19,10 +19,6 @@ def query_pipeline(
     top_k_retrieve: int = 20,
     top_k_rerank: int = 5,
 ) -> Generator:
-    import traceback
-    print(f"\n=== QUERY PIPELINE CALLED: '{question}' ===")
-    print(f"Called from:\n{''.join(traceback.format_stack()[-3:])}")
-
     """
     Full query pipeline. Yields structured events for streaming.
 
@@ -35,6 +31,10 @@ def query_pipeline(
 
     The frontend listens to these events and updates the UI progressively.
     """
+    import traceback
+    print(f"\n=== QUERY PIPELINE CALLED: '{question}' ===")
+    print(f"Called from:\n{''.join(traceback.format_stack()[-3:])}")
+
     # Step 1: Load conversation history
     history = _load_history(session_id) if session_id else []
 

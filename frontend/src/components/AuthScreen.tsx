@@ -7,11 +7,13 @@ export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
 
     try {
@@ -22,7 +24,7 @@ export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
         const { error: signUpError } = await supabase.auth.signUp({ email, password });
         if (signUpError) throw signUpError;
         // Supabase requires email confirmation
-        setError("A verification email has been sent to your inbox. Please verify your email to log in.");
+        setSuccess("A verification email has been sent to your inbox. Please verify your email to log in.");
         setLoading(false);
         return;
       }
@@ -88,6 +90,7 @@ export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
             </div>
 
             {error && <p className="text-red-400 text-sm text-center font-medium bg-red-500/10 py-2 rounded-lg">{error}</p>}
+            {success && <p className="text-[#1D9E75] text-sm text-center font-medium bg-[#1D9E75]/10 py-2 rounded-lg">{success}</p>}
 
             <button
               type="submit"
