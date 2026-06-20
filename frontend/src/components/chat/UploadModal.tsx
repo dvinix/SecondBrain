@@ -49,7 +49,7 @@ const STATUS_COLOR: Record<IndexStatus, string> = {
   error: "text-red-400 bg-red-400/10",
 };
 
-const ACCEPTED_TYPES = ".pdf,.md,.txt,.docx,text/plain,text/markdown,application/pdf";
+const ACCEPTED_TYPES = ".pdf,.md,.txt,.docx,.doc,text/plain,text/markdown,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
 // ── Detect doc type from file ──────────────────────────────────────────────────
 
@@ -58,7 +58,7 @@ function detectType(file: File): DocType {
   if (ext === "pdf") return "pdf";
   if (ext === "md") return "md";
   if (ext === "txt") return "txt";
-  if (ext === "docx") return "docx";
+  if (ext === "docx" || ext === "doc") return "docx";
   return "txt";
 }
 
@@ -305,7 +305,17 @@ export function UploadModal() {
     (files: File[]) => {
       const valid = files.filter((f) => {
         const ext = f.name.split(".").pop()?.toLowerCase();
-        return ["pdf", "md", "txt", "docx"].includes(ext ?? "");
+        const isValidType = ["pdf", "md", "txt", "docx", "doc"].includes(ext ?? "");
+        if (!isValidType) return false;
+
+        // Prevent duplicate documents
+        const isDuplicate = state.documents.some(doc => doc.filename === f.name);
+        if (isDuplicate) {
+          alert(`Document "${f.name}" has already been uploaded.`);
+          return false;
+        }
+
+        return true;
       });
 
       const newItems: QueuedFile[] = valid.map((file) => ({
@@ -322,7 +332,7 @@ export function UploadModal() {
         processFile(item.id, item.file);
       }
     },
-    [processFile]
+    [processFile, state.documents]
   );
 
   const handleDrop = (e: React.DragEvent) => {
@@ -380,7 +390,7 @@ export function UploadModal() {
               <div>
                 <h2 className="text-[14px] font-semibold text-white">Add Documents</h2>
                 <p className="text-[11px] text-white/30 mt-0.5">
-                  PDF, Markdown, TXT, DOCX
+                  PDF, Markdown, TXT, DOCX, DOC
                 </p>
               </div>
               <button
@@ -418,7 +428,7 @@ export function UploadModal() {
                     <span className="text-primary">browse</span>
                   </p>
                   <p className="text-[11px] text-white/25 mt-1">
-                    PDF · MD · TXT · DOCX
+                    PDF · MD · TXT · DOCX · DOC
                   </p>
                 </div>
                 <input

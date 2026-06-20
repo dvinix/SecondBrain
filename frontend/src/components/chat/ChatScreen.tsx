@@ -1,12 +1,32 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect } from "react";
 import { AppProvider, useApp } from "@/context/AppContext";
+import { listDocuments, isBackendAvailable } from "@/lib/api";
+import type { DocType } from "@/context/AppContext";
 import { Sidebar } from "./Sidebar";
 import { ChatPanel } from "./ChatPanel";
 import { GraphPanel } from "./GraphPanel";
 import { UploadModal } from "./UploadModal";
 
 function ChatLayout() {
-  const { state } = useApp();
+  const { state, setDocuments } = useApp();
+
+  useEffect(() => {
+    if (isBackendAvailable()) {
+      listDocuments().then((apiDocs) => {
+        const docs = apiDocs.map((d) => ({
+          id: d.id,
+          filename: d.filename,
+          type: d.type as DocType,
+          chunkCount: d.chunk_count,
+          status: "indexed" as const,
+          size: d.size_bytes,
+          indexedAt: new Date(d.indexed_at),
+        }));
+        setDocuments(docs);
+      }).catch(console.error);
+    }
+  }, [setDocuments]);
 
   return (
     <div data-chat-screen className="flex h-screen w-screen overflow-hidden bg-background text-white">

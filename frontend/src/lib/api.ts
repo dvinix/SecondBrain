@@ -32,6 +32,7 @@ export interface ApiDocument {
   id: string;
   filename: string;
   type: string;
+  size_bytes: number;
   chunk_count: number;
   indexed_at: string;
 }

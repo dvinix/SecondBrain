@@ -4,6 +4,7 @@ from pypdf import PdfReader
 from pathlib import Path
 from typing import List, Dict
 import re
+import docx
 
 
 def extract_pdf(file_path: str) -> List[Dict]:
@@ -85,6 +86,40 @@ def extract_text_file(file_path: str) -> List[Dict]:
     return pages
 
 
+def extract_docx(file_path: str) -> List[Dict]:
+    """
+    Extract text from a Word document (.docx).
+    Treats the whole document as sequential text, split into pseudo-pages.
+    """
+    path = Path(file_path)
+    try:
+        doc = docx.Document(str(path))
+    except Exception as e:
+        raise ValueError(f"Could not read DOCX file: {e}")
+
+    full_text = []
+    for para in doc.paragraphs:
+        full_text.append(para.text)
+
+    content = "\n".join(full_text)
+    cleaned = _clean_text(content)
+
+    # Split into pseudo-pages of 2000 chars
+    page_size = 2000
+    pages = []
+    for i in range(0, len(cleaned), page_size):
+        chunk = cleaned[i:i + page_size]
+        if chunk.strip():
+            pages.append({
+                "page": i // page_size + 1,
+                "text": chunk,
+                "char_count": len(chunk),
+                "is_scanned": False,
+            })
+
+    return pages
+
+
 def extract(file_path: str) -> List[Dict]:
     """
     Universal entry point. Detects file type and routes accordingly.
@@ -95,6 +130,8 @@ def extract(file_path: str) -> List[Dict]:
         ".pdf": extract_pdf,
         ".md":  extract_markdown,
         ".txt": extract_text_file,
+        ".docx": extract_docx,
+        ".doc": extract_docx,  # Attempt parsing .doc with python-docx, though it may fail if it's legacy binary
     }
     if ext not in extractors:
         raise ValueError(f"Unsupported file type: {ext}. Supported: {list(extractors.keys())}")

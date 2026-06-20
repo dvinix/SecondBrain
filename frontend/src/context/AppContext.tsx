@@ -83,7 +83,8 @@ type AppAction =
   | { type: "SET_QUERYING"; querying: boolean }
   | { type: "SET_ACTIVE_DOC"; docId: string | null }
   | { type: "SET_SESSION_NAME"; name: string }
-  | { type: "SET_SEARCH_QUERY"; query: string };
+  | { type: "SET_SEARCH_QUERY"; query: string }
+  | { type: "SET_DOCUMENTS"; docs: Document[] };
 
 // ── Reducer ────────────────────────────────────────────────────────────────────
 
@@ -96,6 +97,9 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case "ADD_DOCUMENT": {
       const docs = [...state.documents, action.doc];
       return { ...state, documents: docs, totalChunks: computeTotalChunks(docs) };
+    }
+    case "SET_DOCUMENTS": {
+      return { ...state, documents: action.docs, totalChunks: computeTotalChunks(action.docs) };
     }
     case "UPDATE_DOCUMENT": {
       const docs = state.documents.map((d) =>
@@ -163,6 +167,7 @@ interface AppContextValue {
   setActiveDoc: (id: string | null) => void;
   setSessionName: (name: string) => void;
   setSearchQuery: (q: string) => void;
+  setDocuments: (docs: Document[]) => void;
   filteredDocuments: Document[];
 }
 
@@ -183,6 +188,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setActiveDoc = useCallback((docId: string | null) => dispatch({ type: "SET_ACTIVE_DOC", docId }), []);
   const setSessionName = useCallback((name: string) => dispatch({ type: "SET_SESSION_NAME", name }), []);
   const setSearchQuery = useCallback((query: string) => dispatch({ type: "SET_SEARCH_QUERY", query }), []);
+  const setDocuments = useCallback((docs: Document[]) => dispatch({ type: "SET_DOCUMENTS", docs }), []);
 
   const filteredDocuments = state.searchQuery
     ? state.documents.filter((d) =>
@@ -205,6 +211,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setActiveDoc,
         setSessionName,
         setSearchQuery,
+        setDocuments,
         filteredDocuments,
       }}
     >

@@ -11,7 +11,6 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { AuthScreen } from "../components/AuthScreen";
 import { supabase } from "../lib/supabase";
 
 function NotFoundComponent() {
@@ -141,10 +140,17 @@ function RootComponent() {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (!loading && !session && currentPath !== "/" && currentPath !== "/auth") {
+      router.navigate({ to: "/auth", replace: true });
+    }
+  }, [session, loading, currentPath, router]);
+
   if (loading) return null;
 
-  if (!session && currentPath !== "/") {
-    return <AuthScreen onAuthSuccess={() => { }} />;
+  // Prevent rendering child routes (like /chat) briefly before redirect happens
+  if (!session && currentPath !== "/" && currentPath !== "/auth") {
+    return null;
   }
 
   return (

@@ -19,3 +19,4 @@ httpx
 sentence-transformers 
 langchain-huggingface
 langchain-ollama
+python-docx

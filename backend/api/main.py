@@ -52,7 +52,7 @@ async def get_auth_client(credentials: HTTPAuthorizationCredentials = Security(s
 @app.post("/ingest", dependencies=[Depends(get_auth_client)])
 async def ingest(file: UploadFile = File(...)):
     """Upload and index a document."""
-    allowed_types = [".pdf", ".md", ".txt"]
+    allowed_types = [".pdf", ".md", ".txt", ".docx", ".doc"]
     ext = os.path.splitext(file.filename)[1].lower()
     if ext not in allowed_types:
         raise HTTPException(400, f"Unsupported file type: {ext}")
