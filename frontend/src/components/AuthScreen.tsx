@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
-import { Brain, Mail, Key } from "lucide-react";
+import { Brain, Mail, Key, Eye, EyeOff } from "lucide-react";
 
 export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,7 +22,13 @@ export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) throw signInError;
       } else {
-        const { error: signUpError } = await supabase.auth.signUp({ email, password });
+        const { error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: window.location.origin + '/chat'
+          }
+        });
         if (signUpError) throw signUpError;
         // Supabase requires email confirmation
         setSuccess("A verification email has been sent to your inbox. Please verify your email to log in.");
@@ -93,13 +100,21 @@ export function AuthScreen({ onAuthSuccess }: { onAuthSuccess: () => void }) {
             <div className="relative">
               <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-black/40 pl-12 pr-5 py-4 text-white placeholder-zinc-500 focus:border-[#1D9E75]/50 focus:bg-black/60 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/20 transition-all text-sm font-['Inter']"
+                className="w-full rounded-xl border border-white/10 bg-black/40 pl-12 pr-12 py-4 text-white placeholder-zinc-500 focus:border-[#1D9E75]/50 focus:bg-black/60 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/20 transition-all text-sm font-['Inter']"
                 placeholder="Password"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
             </div>
 
             {error && <p className="text-red-400 text-sm text-center font-medium bg-red-500/10 py-2 rounded-lg">{error}</p>}
