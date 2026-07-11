@@ -16,7 +16,7 @@ function ChatLayout() {
       listDocuments().then((apiDocs) => {
         const docs = apiDocs.map((d) => ({
           id: d.id,
-          filename: d.filename,
+          filename: (d as any).name || d.filename || "Untitled Document",
           type: d.type as DocType,
           chunkCount: d.chunk_count,
           status: d.chunk_count > 0 ? ("indexed" as const) : ("queued" as const),

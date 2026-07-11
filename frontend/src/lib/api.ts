@@ -30,7 +30,8 @@ export interface IngestResult {
 
 export interface ApiDocument {
   id: string;
-  filename: string;
+  filename?: string;
+  name?: string;
   type: string;
   size_bytes: number;
   chunk_count: number;
