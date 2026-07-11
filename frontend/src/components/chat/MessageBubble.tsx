@@ -85,9 +85,10 @@ export function MessageBubble({ message }: MessageBubbleProps) {
     return (
       <div className="flex justify-end mb-5">
         <div
-          className="max-w-[65%] rounded-2xl rounded-tr-sm px-4 py-3 shadow-[0_2px_12px_rgba(132,165,157,0.15)]"
+          className="max-w-[65%] rounded-3xl rounded-tr-sm px-5 py-3.5 shadow-lg"
           style={{
             background: "linear-gradient(135deg, var(--primary) 0%, #6b9c94 100%)",
+            boxShadow: "0 8px 24px -6px rgba(132,165,157,0.3)"
           }}
         >
           <p className="text-[13px] text-white leading-relaxed font-medium">{message.content}</p>
@@ -114,7 +115,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
       <div className="flex-1 min-w-0">
         {/* AI Response Box (Light Box) */}
-        <div className="rounded-2xl rounded-tl-sm border border-border bg-surface/30 p-5 shadow-lg backdrop-blur-md transition-all duration-300 hover:border-primary/20">
+        <div className="rounded-3xl rounded-tl-sm border border-white/5 bg-surface/50 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-white/10 hover:shadow-2xl hover:bg-surface/60">
           {message.content.trim() === "" && message.isStreaming ? (
             <TypingIndicator />
           ) : (

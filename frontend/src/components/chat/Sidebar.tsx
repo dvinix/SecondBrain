@@ -1,7 +1,9 @@
 import { useRef, useEffect, useCallback } from "react";
 import { useApp } from "@/context/AppContext";
 import type { Document } from "@/context/AppContext";
-import { Search, Plus, FileText, FileCode, File, AlignLeft, Brain } from "lucide-react";
+import { Search, Plus, FileText, FileCode, File, AlignLeft, Brain, LogOut, User } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 const TYPE_COLOR: Record<string, string> = {
   pdf: "var(--primary)",
@@ -81,6 +83,13 @@ function DocItem({ doc }: { doc: Document }) {
 export function Sidebar() {
   const { state, setUploadOpen, setSearchQuery, filteredDocuments } = useApp();
   const searchRef = useRef<HTMLInputElement>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+  }, []);
 
   // ⌘K shortcut
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -169,16 +178,39 @@ export function Sidebar() {
       </div>
 
       {/* Status bar */}
-      <div className="px-4 py-2 border-t border-border flex items-center gap-2">
-        <span
-          className="h-1.5 w-1.5 rounded-full animate-pulse"
-          style={{ backgroundColor: "var(--primary)" }}
-          aria-hidden="true"
-        />
-        <p className="text-[10px] text-white/30 leading-none">
-          {docCount} doc{docCount !== 1 ? "s" : ""} ·{" "}
-          {totalChunks.toLocaleString()} chunks
-        </p>
+      <div className="px-4 py-2 border-t border-border flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span
+            className="h-1.5 w-1.5 rounded-full animate-pulse"
+            style={{ backgroundColor: "var(--primary)" }}
+            aria-hidden="true"
+          />
+          <p className="text-[10px] text-white/30 leading-none">
+            {docCount} doc{docCount !== 1 ? "s" : ""} ·{" "}
+            {totalChunks.toLocaleString()} chunks
+          </p>
+        </div>
+      </div>
+
+      {/* User Profile */}
+      <div className="p-3 border-t border-border bg-black/10">
+        <div className="flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-white/[0.04] transition-colors group">
+          <div className="h-7 w-7 rounded-full bg-primary/20 grid place-items-center text-primary shrink-0">
+            <User size={13} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] font-medium text-white/80 truncate">
+              {user?.user_metadata?.full_name || user?.email || "User"}
+            </p>
+          </div>
+          <button
+            onClick={async () => await supabase.auth.signOut()}
+            title="Log out"
+            className="text-white/30 hover:text-white/80 transition-colors"
+          >
+            <LogOut size={13} />
+          </button>
+        </div>
       </div>
     </aside>
   );

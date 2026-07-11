@@ -19,7 +19,7 @@ function ChatLayout() {
           filename: d.filename,
           type: d.type as DocType,
           chunkCount: d.chunk_count,
-          status: "indexed" as const,
+          status: d.chunk_count > 0 ? ("indexed" as const) : ("queued" as const),
           size: d.size_bytes,
           indexedAt: new Date(d.indexed_at),
         }));

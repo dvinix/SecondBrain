@@ -21,3 +21,4 @@ langchain-huggingface
 langchain-ollama
 python-docx
 deepeval
+ragas

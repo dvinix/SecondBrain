@@ -174,7 +174,7 @@ export function ChatPanel() {
   }, [handleGlobalKey]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
@@ -304,11 +304,22 @@ To get real answers powered by the backend, start the Python server and set VITE
     textareaRef.current?.focus();
   };
 
+  const activeDoc = state.documents.find((d) => d.id === state.activeDocId);
+
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-background">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-border shrink-0 bg-surface/40">
-        <SessionName />
+      <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.06] shrink-0 bg-surface/50 backdrop-blur-xl sticky top-0 z-10">
+        <div className="flex items-center gap-3">
+          <SessionName />
+          {activeDoc && (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/5 border border-white/10">
+              <span className="text-[11px] font-medium text-white/70 truncate max-w-[200px]">
+                {activeDoc.filename}
+              </span>
+            </div>
+          )}
+        </div>
         <div className="flex items-center gap-2">
           <button
             id="graph-toggle-btn"
@@ -323,21 +334,11 @@ To get real answers powered by the backend, start the Python server and set VITE
           >
             <GitBranch size={14} className={state.isGraphOpen ? "text-primary" : ""} />
           </button>
-          
-          <button
-            onClick={async () => {
-              await supabase.auth.signOut();
-            }}
-            title="Log out"
-            className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-[12px] font-medium border border-border text-white/40 hover:text-white/70 hover:border-border transition-all hover:bg-white/5"
-          >
-            <LogOut size={14} />
-          </button>
         </div>
       </div>
 
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto px-5 pt-4 scrollbar-thin">
+      <div className="flex-1 overflow-y-auto px-5 pt-4 pb-8 scrollbar-thin relative z-0">
         {state.messages.length === 0 ? (
           <EmptyState onSuggest={handleSuggest} />
         ) : (
@@ -351,14 +352,14 @@ To get real answers powered by the backend, start the Python server and set VITE
       </div>
 
       {/* Input area */}
-      <div className="shrink-0 px-5 py-4 border-t border-border bg-surface/40">
+      <div className="shrink-0 px-5 py-6 border-t border-white/[0.04] bg-surface/40 backdrop-blur-2xl relative z-10">
         <div className="max-w-3xl mx-auto">
           <div
-            className={`relative flex items-end gap-3 rounded-2xl border bg-surface px-4 py-3 
-                         transition-all duration-200
+            className={`relative flex items-end gap-3 rounded-3xl border bg-surface/60 backdrop-blur-md px-5 py-3.5 
+                         transition-all duration-300 ease-out
                          ${state.isQuerying || input.length > 0
-                ? "border-primary/40 shadow-[0_0_0_1px_rgba(132,165,157,0.15),0_0_24px_rgba(132,165,157,0.09)]"
-                : "border-border focus-within:border-primary/40 focus-within:shadow-[0_0_0_1px_rgba(132,165,157,0.15),0_0_24px_rgba(132,165,157,0.09)]"
+                ? "border-primary/50 shadow-[0_0_0_1px_rgba(132,165,157,0.2),0_8px_32px_rgba(132,165,157,0.15)]"
+                : "border-white/10 hover:border-white/20 focus-within:border-primary/50 focus-within:shadow-[0_0_0_1px_rgba(132,165,157,0.2),0_8px_32px_rgba(132,165,157,0.15)]"
               }`}
           >
             <textarea
