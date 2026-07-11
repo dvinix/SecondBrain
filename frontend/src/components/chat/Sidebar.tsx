@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import type { Document } from "@/context/AppContext";
 import { Search, Plus, FileText, FileCode, File, AlignLeft, Brain, LogOut, User } from "lucide-react";
